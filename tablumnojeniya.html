@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Мудрая Сова: Таблица умножения</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 40%, #1a2a4a 0%, #0a0a1a 80%);
+    font-family: 'Georgia', serif;
+    overflow: hidden;
+    padding: 14px;
+  }
+
+  .game-wrap {
+    position: relative;
+    width: min(560px, 96vw);
+    height: min(760px, 94vh);
+    border-radius: 24px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #1a1030 0%, #2a1a3a 50%, #3a1a2a 100%);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.85),
+                0 0 0 2px rgba(255,215,122,0.35),
+                0 0 80px rgba(255,215,122,0.12);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Небо-фон */
+  .bg-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .bg-star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle 3s infinite ease-in-out;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.15; transform: scale(0.8); }
+    50%      { opacity: 1;    transform: scale(1.2); }
+  }
+  .bg-moon {
+    position: absolute;
+    top: 40px;
+    right: 50px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 35%, #fff8d0, #ffe27a 60%, #d8b040);
+    box-shadow: 0 0 60px rgba(255,215,122,0.55),
+                0 0 120px rgba(255,215,122,0.25);
+    animation: moonPulse 6s ease-in-out infinite;
+  }
+  @keyframes moonPulse {
+    0%, 100% { box-shadow: 0 0 60px rgba(255,215,122,0.55), 0 0 120px rgba(255,215,122,0.25); }
+    50%      { box-shadow: 0 0 80px rgba(255,215,122,0.85), 0 0 160px rgba(255,215,122,0.4); }
+  }
+  .bg-moon::before, .bg-moon::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(220, 200, 160, 0.35);
+  }
+  .bg-moon::before {
+    top: 22px; left: 24px;
+    width: 18px; height: 18px;
+  }
+  .bg-moon::after {
+    top: 55px; left: 52px;
+    width: 12px; height: 12px;
+  }
+
+  /* ===== HUD ===== */
+  .hud {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 22px 0;
+    color: #ffd77a;
+    font-size: 17px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+  }
+  .hud-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,215,122,0.25);
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .lives { letter-spacing: 3px; font-size: 15px; }
+
+  /* ===== Сова ===== */
+  .owl-zone {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    padding: 18px 0 4px;
+  }
+  .owl {
+    width: 110px;
+    height: 110px;
+    position: relative;
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+    animation: owlBob 3s ease-in-out infinite;
+  }
+  @keyframes owlBob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+  }
+  .owl.happy  { animation: owlHappy 0.5s ease-out; }
+  .owl.sad    { animation: owlSad 0.5s ease-out; }
+  @keyframes owlHappy {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25%      { transform: scale(1.15) rotate(-6deg); }
+    75%      { transform: scale(1.15) rotate(6deg); }
+  }
+  @keyframes owlSad {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-8px) rotate(-4deg); }
+    75%      { transform: translateX(8px) rotate(4deg); }
+  }
+
+  /* ===== Combo ===== */
+  .combo {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    height: 26px;
+    color: #ffb040;
+    font-size: 16px;
+    letter-spacing: 3px;
+    font-style: italic;
+    text-shadow: 0 0 12px rgba(255,176,64,0.8);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .combo.show { opacity: 1; animation: comboPop 0.4s ease-out; }
+  @keyframes comboPop {
+    0%   { transform: scale(0.6); }
+    60%  { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  /* ===== Задача ===== */
+  .question-zone {
+    position: relative;
+    z-index: 2;
+    flex: 0 0 auto;
+    padding: 4px 22px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .question {
+    font-size: clamp(38px, 9vw, 62px);
+    font-weight: bold;
+    color: #fff3b0;
+    letter-spacing: 4px;
+    text-shadow: 0 4px 16px rgba(255,215,122,0.5),
+                 0 0 40px rgba(255,215,122,0.25);
+    font-family: 'Georgia', serif;
+    transition: transform 0.25s ease;
+    white-space: nowrap;
+  }
+  .question.pop { animation: qPop 0.35s ease-out; }
+  @keyframes qPop {
+    0%   { transform: scale(0.85); opacity: 0.6; }
+    60%  { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Полоса времени */
+  .timer-bar {
+    width: 100%;
+    max-width: 380px;
+    height: 8px;
+    background: rgba(255,215,122,0.12);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+  }
+  .timer-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #6affa0, #ffd77a, #ff8a5a);
+    border-radius: 5px;
+    transition: width 0.1s linear;
+  }
+  .timer-fill.warn { background: linear-gradient(90deg, #ff8a5a, #ff4a4a); }
+
+  /* ===== Ответы ===== */
+  .answers {
+    position: relative;
+    z-index: 2;
+    flex: 1 1 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    padding: 16px 22px 22px;
+    align-content: center;
+  }
+
+  .answer-btn {
+    padding: 20px 10px;
+    font-family: 'Georgia', serif;
+    font-size: clamp(24px, 5vw, 34px);
+    font-weight: bold;
+    color: #2a1a0a;
+    background: linear-gradient(180deg, #fff3b0, #ffd77a 55%, #d4a437);
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #8a6a1a,
+                0 8px 24px rgba(255,200,74,0.35),
+                inset 0 1px 0 rgba(255,255,255,0.75);
+    transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.2s, color 0.2s;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 2px;
+  }
+  .answer-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 0 #8a6a1a,
+                0 12px 28px rgba(255,200,74,0.55),
+                inset 0 1px 0 rgba(255,255,255,0.75);
+  }
+  .answer-btn:active:not(:disabled) {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #8a6a1a,
+                0 4px 12px rgba(255,200,74,0.35);
+  }
+  .answer-btn:disabled { cursor: default; }
+
+  .answer-btn.correct {
+    background: linear-gradient(180deg, #a8ffb8, #4ade80 55%, #16a34a);
+    color: #ffffff;
+    box-shadow: 0 6px 0 #14532d,
+                0 8px 30px rgba(74,222,128,0.7),
+                inset 0 1px 0 rgba(255,255,255,0.55);
+    animation: correctPulse 0.5s ease-out;
+  }
+  @keyframes correctPulse {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  .answer-btn.wrong {
+    background: linear-gradient(180deg, #ffb0b0, #ff5a5a 55%, #b02020);
+    color: #ffffff;
+    box-shadow: 0 6px 0 #6a1010,
+                0 8px 24px rgba(255,90,90,0.6);
+    animation: wrongShake 0.45s ease-out;
+  }
+  @keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    20%      { transform: translateX(-8px); }
+    40%      { transform: translateX(8px); }
+    60%      { transform: translateX(-6px); }
+    80%      { transform: translateX(6px); }
+  }
+  .answer-btn.dim {
+    opacity: 0.35;
+    filter: grayscale(0.7);
+  }
+
+  /* ===== Экраны ===== */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 5, 16, 0.88);
+    backdrop-filter: blur(8px);
+    text-align: center;
+    padding: 32px 26px;
+    color: #f4e4c1;
+    transition: opacity 0.35s ease;
+  }
+  .overlay.hidden { opacity: 0; pointer-events: none; }
+
+  .overlay h1 {
+    font-size: clamp(28px, 6.5vw, 48px);
+    background: linear-gradient(180deg, #fff3b0, #ffd77a, #c99a2e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 4px 12px rgba(255,215,122,0.4));
+  }
+  .overlay h2 {
+    font-size: clamp(22px, 5vw, 32px);
+    color: #ffd77a;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    text-shadow: 0 0 20px rgba(255,215,122,0.4);
+  }
+  .overlay p {
+    font-size: clamp(14px, 2.4vw, 17px);
+    line-height: 1.9;
+    color: #d8c8a8;
+    font-style: italic;
+    margin-bottom: 8px;
+    max-width: 400px;
+  }
+  .overlay .hint {
+    color: #b8a4d4;
+    font-style: normal;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-top: 14px;
+  }
+  .overlay .big-score {
+    font-size: 56px;
+    color: #ffd77a;
+    margin: 10px 0 4px;
+    text-shadow: 0 0 30px rgba(255,215,122,0.6);
+    font-weight: bold;
+  }
+
+  button {
+    margin-top: 18px;
+    padding: 14px 42px;
+    font-family: 'Georgia', serif;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    color: #2a1a0a;
+    background: linear-gradient(180deg, #ffe8a0, #ffc94a, #d4a437);
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(255, 200, 74, 0.35),
+                0 6px 0 #8a6a1a,
+                inset 0 1px 0 rgba(255,255,255,0.65);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(255, 200, 74, 0.55),
+                0 6px 0 #8a6a1a,
+                inset 0 1px 0 rgba(255,255,255,0.65);
+  }
+  button:active {
+    transform: translateY(3px);
+    box-shadow: 0 3px 0 #8a6a1a, 0 6px 16px rgba(255,200,74,0.4);
+  }
+
+  /* ===== Выбор уровня ===== */
+  .levels {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 340px;
+    margin-top: 16px;
+  }
+  .level-btn {
+    padding: 16px 10px;
+    margin: 0;
+    font-size: 16px;
+    letter-spacing: 1px;
+    background: rgba(255,215,122,0.1);
+    border: 2px solid rgba(255,215,122,0.4);
+    color: #ffd77a;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: 'Georgia', serif;
+    font-weight: bold;
+    box-shadow: none;
+    transition: all 0.2s ease;
+  }
+  .level-btn:hover {
+    background: rgba(255,215,122,0.25);
+    border-color: #ffd77a;
+    box-shadow: 0 0 20px rgba(255,215,122,0.4);
+    transform: translateY(-2px);
+  }
+  .level-btn.active {
+    background: linear-gradient(180deg, #ffe8a0, #ffc94a);
+    color: #2a1a0a;
+    border-color: #fff3b0;
+  }
+  .level-btn small {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0;
+    font-style: italic;
+    opacity: 0.85;
+    margin-top: 3px;
+    font-weight: normal;
+  }
+
+  /* ===== Статистика в проигрыше ===== */
+  .stats {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-value {
+    font-size: 28px;
+    color: #ffd77a;
+    font-weight: bold;
+    text-shadow: 0 0 15px rgba(255,215,122,0.5);
+  }
+  .stat-label {
+    font-size: 12px;
+    color: #b8a4d4;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ===== Всплывающие +N ===== */
+  .float-plus {
+    position: absolute;
+    z-index: 5;
+    pointer-events: none;
+    font-size: 32px;
+    font-weight: bold;
+    color: #6affa0;
+    text-shadow: 0 0 16px rgba(106,255,160,0.9),
+                 0 3px 8px rgba(0,0,0,0.9);
+    animation: floatUp 1s ease-out forwards;
+    font-family: 'Georgia', serif;
+  }
+  @keyframes floatUp {
+    0%   { opacity: 0; transform: translateY(20px) scale(0.6); }
+    20%  { opacity: 1; transform: translateY(0)    scale(1.2); }
+    100% { opacity: 0; transform: translateY(-70px) scale(1); }
+  }
+
+  /* ===== Тряска экрана ===== */
+  .shake { animation: screenShake 0.4s ease-out; }
+  @keyframes screenShake {
+    0%, 100% { transform: translate(0, 0); }
+    20%      { transform: translate(-6px, 4px); }
+    40%      { transform: translate(6px, -4px); }
+    60%      { transform: translate(-4px, -4px); }
+    80%      { transform: translate(4px, 4px); }
+  }
+</style>
+</head>
+<body>
+
+<div class="game-wrap" id="gameWrap">
+  <div class="bg-stars" id="bgStars"></div>
+  <div class="bg-moon"></div>
+
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hud-item">🏆 <span id="score">0</span></div>
+    <div class="hud-item">🔥 <span id="best">0</span></div>
+    <div class="hud-item lives" id="lives">❤️❤️❤️</div>
+  </div>
+
+  <!-- Сова -->
+  <div class="owl-zone">
+    <div class="owl" id="owl">
+      <svg viewBox="0 0 110 110">
+        <defs>
+          <radialGradient id="owlBody" cx="50%" cy="40%">
+            <stop offset="0%"  stop-color="#a88a5a"/>
+            <stop offset="70%" stop-color="#7a5a3a"/>
+            <stop offset="100%" stop-color="#4a3020"/>
+          </radialGradient>
+          <radialGradient id="owlBelly" cx="50%" cy="50%">
+            <stop offset="0%"  stop-color="#f0e0c0"/>
+            <stop offset="100%" stop-color="#c8a870"/>
+          </radialGradient>
+          <radialGradient id="eyeG" cx="40%" cy="35%">
+            <stop offset="0%"  stop-color="#ffffff"/>
+            <stop offset="60%" stop-color="#f0f0e0"/>
+            <stop offset="100%" stop-color="#c8c0a0"/>
+          </radialGradient>
+          <radialGradient id="irisG" cx="40%" cy="35%">
+            <stop offset="0%"  stop-color="#ffd77a"/>
+            <stop offset="70%" stop-color="#e08a2a"/>
+            <stop offset="100%" stop-color="#8a4a10"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Уши -->
+        <path d="M 22 30 L 18 10 L 40 24 Z" fill="#5a3a20"/>
+        <path d="M 88 30 L 92 10 L 70 24 Z" fill="#5a3a20"/>
+
+        <!-- Тело -->
+        <ellipse cx="55" cy="60" rx="42" ry="44" fill="url(#owlBody)"/>
+
+        <!-- Живот -->
+        <ellipse cx="55" cy="70" rx="26" ry="30" fill="url(#owlBelly)"/>
+        <!-- Полоски на животе -->
+        <g stroke="#a08060" stroke-width="1" opacity="0.5" fill="none">
+          <path d="M 42 55 Q 55 58 68 55"/>
+          <path d="M 38 65 Q 55 68 72 65"/>
+          <path d="M 40 75 Q 55 78 70 75"/>
+          <path d="M 44 85 Q 55 88 66 85"/>
+        </g>
+
+        <!-- Глаза -->
+        <circle cx="38" cy="50" r="18" fill="url(#eyeG)" stroke="#4a3020" stroke-width="2"/>
+        <circle cx="72" cy="50" r="18" fill="url(#eyeG)" stroke="#4a3020" stroke-width="2"/>
+        <circle cx="38" cy="50" r="10" fill="url(#irisG)"/>
+        <circle cx="72" cy="50" r="10" fill="url(#irisG)"/>
+        <circle cx="38" cy="50" r="5" fill="#1a0a05"/>
+        <circle cx="72" cy="50" r="5" fill="#1a0a05"/>
+        <!-- Блики -->
+        <circle cx="42" cy="46" r="3.5" fill="#fff" opacity="0.9"/>
+        <circle cx="76" cy="46" r="3.5" fill="#fff" opacity="0.9"/>
+
+        <!-- Брови мудрые -->
+        <path d="M 22 36 Q 38 28 52 36" stroke="#3a2010" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M 58 36 Q 72 28 88 36" stroke="#3a2010" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+        <!-- Клюв -->
+        <path d="M 55 58 L 48 68 L 55 74 L 62 68 Z" fill="#e8a040"/>
+        <path d="M 55 58 L 48 68 L 55 70 Z" fill="#c8802a"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Комбо -->
+  <div class="combo" id="combo"></div>
+
+  <!-- Задача -->
+  <div class="question-zone">
+    <div class="question" id="question">7 × 8</div>
+    <div class="timer-bar">
+      <div class="timer-fill" id="timerFill"></div>
+    </div>
+  </div>
+
+  <!-- Ответы -->
+  <div class="answers" id="answers">
+    <button class="answer-btn" data-i="0"></button>
+    <button class="answer-btn" data-i="1"></button>
+    <button class="answer-btn" data-i="2"></button>
+    <button class="answer-btn" data-i="3"></button>
+  </div>
+
+  <!-- ===== Стартовый экран ===== -->
+  <div class="overlay" id="startScreen">
+    <h1>Мудрая Сова</h1>
+    <p style="margin-bottom:6px;font-style:normal;letter-spacing:2px;color:#ffd77a;font-size:15px;">ТАБЛИЦА УМНОЖЕНИЯ</p>
+    <p style="margin-top:10px;">Выбери уровень и помоги сове<br>решить все примеры!</p>
+
+    <div class="levels" id="levels">
+      <button class="level-btn active" data-min="1" data-max="5">
+        1 – 5
+        <small>новичок</small>
+      </button>
+      <button class="level-btn" data-min="1" data-max="10">
+        1 – 10
+        <small>ученик</small>
+      </button>
+      <button class="level-btn" data-min="2" data-max="9">
+        2 – 9
+        <small>школьник</small>
+      </button>
+      <button class="level-btn" data-min="2" data-max="12">
+        2 – 12
+        <small>мастер</small>
+      </button>
+    </div>
+
+    <button id="startBtn">Начать</button>
+    <div class="hint">Отвечай правильно и быстро, собери максимум очков!</div>
+  </div>
+
+  <!-- ===== Проигрыш ===== -->
+  <div class="overlay hidden" id="gameOverScreen">
+    <h2>Увы!</h2>
+    <p>Все звёздочки растаяли...</p>
+    <div class="big-score" id="finalScore">0</div>
+    <p style="margin-bottom:0;font-style:normal;font-size:14px;letter-spacing:2px;color:#b8a4d4;">ОЧКОВ</p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-value" id="statCorrect">0</div>
+        <div class="stat-label">верно</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="statBest">0</div>
+        <div class="stat-label">серия</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="statAccuracy">0%</div>
+        <div class="stat-label">точность</div>
+      </div>
+    </div>
+
+    <button id="restartBtn">Ещё раз</button>
+  </div>
+
+  <!-- ===== Победа ===== -->
+  <div class="overlay hidden" id="winScreen">
+    <h2>🌟 Молодец! 🌟</h2>
+    <p>Сова довольна твоими знаниями!</p>
+    <div class="big-score" id="winScore">0</div>
+    <p style="margin-bottom:0;font-style:normal;font-size:14px;letter-spacing:2px;color:#b8a4d4;">ОЧКОВ</p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-value" id="winCorrect">0</div>
+        <div class="stat-label">верно</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="winBest">0</div>
+        <div class="stat-label">серия</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="winAccuracy">0%</div>
+        <div class="stat-label">точность</div>
+      </div>
+    </div>
+
+    <button id="winBtn">Ещё раз</button>
+  </div>
+
+</div>
+
+<script>
+(() => {
+  // ===== Элементы =====
+  const wrap       = document.getElementById('gameWrap');
+  const bgStars    = document.getElementById('bgStars');
+  const owl        = document.getElementById('owl');
+  const questionEl = document.getElementById('question');
+  const timerFill  = document.getElementById('timerFill');
+  const answersEl  = document.getElementById('answers');
+  const answerBtns = [...document.querySelectorAll('.answer-btn')];
+  const comboEl    = document.getElementById('combo');
+  const scoreEl    = document.getElementById('score');
+  const bestEl     = document.getElementById('best');
+  const livesEl    = document.getElementById('lives');
+
+  const startScreen    = document.getElementById('startScreen');
+  const gameOverScreen = document.getElementById('gameOverScreen');
+  const winScreen      = document.getElementById('winScreen');
+
+  const startBtn   = document.getElementById('startBtn');
+  const restartBtn = document.getElementById('restartBtn');
+  const winBtn     = document.getElementById('winBtn');
+  const levelBtns  = [...document.querySelectorAll('.level-btn')];
+
+  // ===== Звёзды фона =====
+  for (let i = 0; i < 70; i++) {
+    const s = document.createElement('div');
+    s.className = 'bg-star';
+    const size = Math.random() * 2.5 + 1;
+    s.style.width  = size + 'px';
+    s.style.height = size + 'px';
+    s.style.left   = Math.random() * 100 + '%';
+    s.style.top    = Math.random() * 100 + '%';
+    s.style.animationDelay    = (Math.random() * 3) + 's';
+    s.style.animationDuration = (2 + Math.random() * 3) + 's';
+    bgStars.appendChild(s);
+  }
+
+  // ===== Настройки игры =====
+  const QUESTIONS_PER_GAME = 10;   // сколько вопросов = победа
+  const TIME_PER_QUESTION  = 10;   // секунд на ответ
+  const START_LIVES        = 3;
+
+  let level = { min: 1, max: 5 };
+
+  let state = 'menu';    // menu | playing | over | won
+  let score = 0;
+  let lives = START_LIVES;
+  let streak = 0;
+  let bestStreak = 0;
+  let correctCount = 0;
+  let totalAnswered = 0;
+  let questionsDone = 0;   // сколько вопросов задано в текущей игре
+
+  // Текущий вопрос
+  let currentQ = { a: 0, b: 0, answer: 0 };
+
+  // Таймер
+  let timeLeft = 0;
+  let timerActive = false;
+  let lastTime = 0;
+
+  // ===== Утилиты =====
+  const rand = (a, b) => Math.floor(a + Math.random() * (b - a + 1));
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function updateLives() {
+    livesEl.textContent = '❤️'.repeat(Math.max(0, lives)) + '🖤'.repeat(Math.max(0, START_LIVES - lives));
+  }
+
+  function updateScore() {
+    scoreEl.textContent = score;
+    bestEl.textContent = bestStreak;
+  }
+
+  function spawnFloat(text, x, y, color = '#6affa0') {
+    const el = document.createElement('div');
+    el.className = 'float-plus';
+    el.textContent = text;
+    el.style.color = color;
+    const wrapRect = wrap.getBoundingClientRect();
+    el.style.left = (x - wrapRect.left - 20) + 'px';
+    el.style.top  = (y - wrapRect.top - 20) + 'px';
+    wrap.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+  }
+
+  function screenShake() {
+    wrap.classList.add('shake');
+    setTimeout(() => wrap.classList.remove('shake'), 420);
+  }
+
+  function setOwlState(cls) {
+    owl.classList.remove('happy', 'sad');
+    void owl.offsetWidth;  // перезапуск анимации
+    if (cls) owl.classList.add(cls);
+    if (cls) setTimeout(() => owl.classList.remove(cls), 700);
+  }
+
+  // ===== Вопросы =====
+  function generateQuestion() {
+    const a = rand(level.min, level.max);
+    const b = rand(level.min, level.max);
+    const answer = a * b;
+
+    // Правильный + 3 неправильных варианта
+    const options = new Set([answer]);
+    let guard = 0;
+    while (options.size < 4 && guard++ < 100) {
+      // Правдоподобный неправильный ответ
+      const offset = rand(1, 4) * (Math.random() < 0.5 ? -1 : 1);
+      const wrong = Math.max(0, answer + offset) || (answer + rand(1, 12));
+      if (wrong !== answer) options.add(wrong);
+    }
+    // На всякий случай — если не набрали
+    while (options.size < 4) options.add(answer + options.size + 1);
+
+    const shuffled = shuffle([...options]);
+
+    currentQ = { a, b, answer };
+    questionEl.textContent = `${a} × ${b}`;
+    questionEl.classList.remove('pop');
+    void questionEl.offsetWidth;
+    questionEl.classList.add('pop');
+
+    // Расставить на кнопки
+    answerBtns.forEach((btn, i) => {
+      btn.textContent = shuffled[i];
+      btn.dataset.value = shuffled[i];
+      btn.classList.remove('correct', 'wrong', 'dim');
+      btn.disabled = false;
+    });
+
+    timeLeft = TIME_PER_QUESTION;
+    timerActive = true;
+    timerFill.style.width = '100%';
+    timerFill.classList.remove('warn');
+  }
+
+  // ===== Ответ =====
+  function handleAnswer(btn) {
+    if (state !== 'playing' || !timerActive) return;
+    timerActive = false;
+
+    const value = Number(btn.dataset.value);
+    const isCorrect = value === currentQ.answer;
+
+    totalAnswered++;
+    if (isCorrect) {
+      correctCount++;
+      streak++;
+      bestStreak = Math.max(bestStreak, streak);
+
+      // Очки: базовые 10 + бонус за скорость + бонус за серию
+      const speedBonus = Math.round(timeLeft * 2);
+      const streakBonus = Math.min(20, streak * 2);
+      const gained = 10 + speedBonus + streakBonus;
+      score += gained;
+
+      btn.classList.add('correct');
+      answerBtns.forEach(b => { if (b !== btn) b.classList.add('dim'); });
+      answerBtns.forEach(b => b.disabled = true);
+
+      // Комбо
+      if (streak >= 2) {
+        comboEl.textContent = `🔥 Серия ${streak}! +${streakBonus}`;
+        comboEl.classList.add('show');
+        setTimeout(() => comboEl.classList.remove('show'), 1400);
+      }
+
+      setOwlState('happy');
+      updateScore();
+
+      // Всплывающее +N
+      const r = btn.getBoundingClientRect();
+      spawnFloat('+' + gained, r.left + r.width / 2, r.top, '#6affa0');
+
+      questionsDone++;
+      setTimeout(() => {
+        if (questionsDone >= QUESTIONS_PER_GAME) {
+          winGame();
+        } else {
+          nextQuestion();
+        }
+      }, 700);
+
+    } else {
+      // Неверно
+      streak = 0;
+      lives--;
+      updateLives();
+      updateScore();
+
+      btn.classList.add('wrong');
+      answerBtns.forEach(b => b.disabled = true);
+      // Подсветить правильный
+      answerBtns.forEach(b => {
+        if (Number(b.dataset.value) === currentQ.answer) {
+          b.classList.add('correct');
+        } else if (b !== btn) {
+          b.classList.add('dim');
+        }
+      });
+
+      setOwlState('sad');
+      screenShake();
+
+      const r = btn.getBoundingClientRect();
+      spawnFloat('−1 ❤️', r.left + r.width / 2, r.top, '#ff8a8a');
+
+      questionsDone++;
+      setTimeout(() => {
+        if (lives <= 0) {
+          gameOver();
+        } else if (questionsDone >= QUESTIONS_PER_GAME) {
+          winGame();
+        } else {
+          nextQuestion();
+        }
+      }, 900);
+    }
+  }
+
+  // Таймер истёк
+  function handleTimeout() {
+    if (state !== 'playing' || !timerActive) return;
+    timerActive = false;
+    streak = 0;
+    lives--;
+    updateLives();
+    updateScore();
+
+    answerBtns.forEach(b => {
+      if (Number(b.dataset.value) === currentQ.answer) {
+        b.classList.add('correct');
+      } else {
+        b.classList.add('dim');
+      }
+      b.disabled = true;
+    });
+
+    setOwlState('sad');
+    screenShake();
+
+    questionsDone++;
+    setTimeout(() => {
+      if (lives <= 0) {
+        gameOver();
+      } else if (questionsDone >= QUESTIONS_PER_GAME) {
+        winGame();
+      } else {
+        nextQuestion();
+      }
+    }, 900);
+  }
+
+  function nextQuestion() {
+    if (state !== 'playing') return;
+    generateQuestion();
+  }
+
+  // ===== Игра =====
+  function reset() {
+    score = 0;
+    lives = START_LIVES;
+    streak = 0;
+    bestStreak = 0;
+    correctCount = 0;
+    totalAnswered = 0;
+    questionsDone = 0;
+    timerActive = false;
+    comboEl.classList.remove('show');
+
+    updateScore();
+    updateLives();
+  }
+
+  function startGame() {
+    reset();
+    state = 'playing';
+    startScreen.classList.add('hidden');
+    gameOverScreen.classList.add('hidden');
+    winScreen.classList.add('hidden');
+    generateQuestion();
+  }
+
+  function gameOver() {
+    state = 'over';
+    timerActive = false;
+    document.getElementById('finalScore').textContent = score;
+    document.getElementById('statCorrect').textContent = correctCount;
+    document.getElementById('statBest').textContent = bestStreak;
+    document.getElementById('statAccuracy').textContent =
+      totalAnswered > 0 ? Math.round(correctCount / totalAnswered * 100) + '%' : '0%';
+    gameOverScreen.classList.remove('hidden');
+  }
+
+  function winGame() {
+    state = 'won';
+    timerActive = false;
+    document.getElementById('winScore').textContent = score;
+    document.getElementById('winCorrect').textContent = correctCount;
+    document.getElementById('winBest').textContent = bestStreak;
+    document.getElementById('winAccuracy').textContent =
+      totalAnswered > 0 ? Math.round(correctCount / totalAnswered * 100) + '%' : '0%';
+    winScreen.classList.remove('hidden');
+  }
+
+  // ===== Обработчики =====
+  answerBtns.forEach(btn => {
+    btn.addEventListener('click', () => handleAnswer(btn));
+  });
+
+  startBtn.addEventListener('click', startGame);
+  restartBtn.addEventListener('click', startGame);
+  winBtn.addEventListener('click', startGame);
+
+  // Клавиши 1-4 для быстрого ответа
+  window.addEventListener('keydown', (e) => {
+    if (state !== 'playing') return;
+    const idx = ['1','2','3','4'].indexOf(e.key);
+    if (idx >= 0 && answerBtns[idx] && !answerBtns[idx].disabled) {
+      handleAnswer(answerBtns[idx]);
+    }
+  });
+
+  // Выбор уровня
+  levelBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      levelBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      level.min = Number(btn.dataset.min);
+      level.max = Number(btn.dataset.max);
+    });
+  });
+
+  // ===== Игровой цикл (таймер) =====
+  function loop(t) {
+    if (!lastTime) lastTime = t;
+    const dt = Math.min(0.1, (t - lastTime) / 1000);
+    lastTime = t;
+
+    if (state === 'playing' && timerActive) {
+      timeLeft -= dt;
+      if (timeLeft <= 0) {
+        timeLeft = 0;
+        timerFill.style.width = '0%';
+        handleTimeout();
+      } else {
+        const pct = (timeLeft / TIME_PER_QUESTION) * 100;
+        timerFill.style.width = pct + '%';
+        timerFill.classList.toggle('warn', timeLeft < 3.5);
+      }
+    }
+
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+})();
+</script>
+
+</body>
+</html>
