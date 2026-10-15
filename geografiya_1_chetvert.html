@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Контрольная работа по географии. 9 класс</title>
+<style>
+  body { font-family: 'Georgia', serif; max-width: 820px; margin: 40px auto; padding: 0 20px; line-height: 1.7; color: #222; background: #fff; }
+  h1 { font-size: 24px; margin-bottom: 4px; color: #1a3a5c; }
+  h2 { font-size: 19px; margin-top: 36px; border-bottom: 2px solid #d4e0ec; padding-bottom: 6px; color: #1a3a5c; }
+  .meta { color: #666; font-size: 14px; margin-bottom: 20px; }
+  .gold { background: #fdf6e3; padding: 14px 18px; border-left: 4px solid #d4a843; margin: 14px 0; border-radius: 0 8px 8px 0; }
+  .violet { background: #f3eef9; padding: 14px 18px; border-left: 4px solid #8b6bb5; margin: 14px 0; border-radius: 0 8px 8px 0; }
+  .note { background: #f5f5f5; padding: 12px 16px; border-left: 4px solid #888; margin: 16px 0; border-radius: 0 8px 8px 0; }
+  .theory { background: #eef5fb; padding: 14px 18px; border-left: 4px solid #5b9bd5; margin: 14px 0; border-radius: 0 8px 8px 0; }
+  .question { background: #fcfcfc; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px 20px; margin: 12px 0; }
+  .question.correct { background: #eef8ee; border-left: 5px solid #5cb85c; }
+  .question.wrong { background: #fdf0f0; border-left: 5px solid #d9534f; }
+  .question .num { font-weight: bold; color: #1a3a5c; }
+  .question label { display: block; margin: 6px 0; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+  .question label:hover { background: #eef5fb; }
+  .question input[type="radio"] { margin-right: 8px; }
+  .question input[type="text"] { padding: 8px 12px; font-size: 15px; border: 1px solid #ccc; border-radius: 6px; width: 100%; max-width: 300px; font-family: Georgia, serif; }
+  .btn { display: inline-block; background: #1a3a5c; color: #fff; border: none; padding: 12px 28px; font-size: 16px; font-family: Georgia, serif; border-radius: 8px; cursor: pointer; margin: 20px 0; }
+  .btn:hover { background: #2a4a6c; }
+  .btn.secondary { background: #8b6bb5; }
+  .btn.secondary:hover { background: #7a5aa4; }
+  .btn:disabled { background: #aaa; cursor: not-allowed; }
+  .result { display: none; background: #fdf6e3; border: 2px solid #d4a843; border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center; }
+  .result.show { display: block; }
+  .result .score { font-size: 42px; font-weight: bold; color: #1a3a5c; font-family: Georgia, serif; }
+  .result .grade { font-size: 22px; color: #2a4a6b; margin-top: 8px; }
+  .result .attempt-info { margin-top: 16px; color: #555; font-size: 14px; }
+  .attempt-badge { display: inline-block; background: #1a3a5c; color: #fff; padding: 4px 14px; border-radius: 20px; font-size: 14px; margin-bottom: 12px; }
+  .attempt-badge.second { background: #8b6bb5; }
+  .img-block { margin: 20px 0; text-align: center; }
+  .img-block img { max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  .caption { font-size: 13px; color: #555; font-style: italic; margin-top: 6px; }
+  .divider { text-align: center; color: #b0b0b0; margin: 30px 0; font-size: 18px; letter-spacing: 8px; }
+  .final-message { display: none; background: #f3eef9; border: 2px solid #8b6bb5; border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center; }
+  .final-message.show { display: block; }
+  .answer-feedback { margin-top: 8px; font-size: 14px; font-weight: bold; }
+  .answer-feedback.correct { color: #2a7a2a; }
+  .answer-feedback.wrong { color: #a03030; }
+</style>
+</head>
+<body>
+
+<h1>Контрольная работа по географии. 9 класс</h1>
+<p class="meta">Тема: Регионы России — Дальний Восток, Восточная Сибирь, Западная Сибирь, Урал, Европейский Север.<br>
+20 вопросов. Две попытки.</p>
+
+<div class="gold">
+<strong>Инструкция.</strong>
+<ul>
+<li>Прочитайте вопрос и выберите правильный ответ или впишите его в поле.</li>
+<li>В конце нажмите «Проверить». Вы увидите свои баллы и оценку.</li>
+<li>У вас <strong>две попытки</strong>. После первой можно пройти ещё раз.</li>
+<li>После второй попытки сделайте скриншот результата и отправьте педагогу-наставнику.</li>
+</ul>
+</div>
+
+<div id="attempt-badge" class="attempt-badge">Попытка 1 из 2</div>
+
+<div class="img-block">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Economic_regions_of_Russia.png" alt="Карта экономических районов России">
+  <p class="caption">Карта экономических районов России</p>
+</div>
+
+<div id="quiz"></div>
+
+<button id="check-btn" class="btn">Проверить</button>
+
+<div id="result" class="result">
+  <div class="score"><span id="score-value">0</span> / 20</div>
+  <div class="grade">Оценка: <span id="grade-value">—</span></div>
+  <div class="attempt-info" id="attempt-info"></div>
+  <button id="retry-btn" class="btn secondary" style="display:none;">Пройти вторую попытку</button>
+</div>
+
+<div id="final-message" class="final-message">
+  <h2 style="margin-top:0; color:#5a3a8b;">Попытки исчерпаны</h2>
+  <p>Сфотографируйте или сделайте скриншот этого результата и отправьте педагогу-наставнику на платформу Взнание.</p>
+  <p><strong>Спасибо за работу!</strong></p>
+</div>
+
+<div class="divider">• • •</div>
+
+<div class="violet">
+<strong>Что проверяет эта работа:</strong>
+<ul>
+<li>Знание географического положения регионов России.</li>
+<li>Понимание природных условий и ресурсов.</li>
+<li>Знание крупных городов и хозяйственных центров.</li>
+<li>Умение определять особенности каждого региона.</li>
+</ul>
+</div>
+
+<script>
+const questions = [
+  // Вопросы с выбором ответа
+  { type: 'choice', q: "Какой тип климата характерен для большей части Дальнего Востока?", options: ["Умеренно континентальный", "Муссонный", "Субарктический", "Резко континентальный"], correct: 1 },
+  { type: 'choice', q: "Действующие вулканы находятся на территории:", options: ["Чукотки", "Камчатки и Курильских островов", "Сахалина", "Приморья"], correct: 1 },
+  { type: 'choice', q: "Крупнейший порт Дальнего Востока России:", options: ["Магадан", "Петропавловск-Камчатский", "Владивосток", "Хабаровск"], correct: 2 },
+  { type: 'choice', q: "Муссонный климат Дальнего Востока характеризуется:", options: ["Равномерным распределением осадков в году", "Сухим летом и влажной зимой", "Влажным летом и сухой зимой", "Осадков почти не бывает"], correct: 2 },
+  { type: 'choice', q: "Полюс холода России расположен в районе:", options: ["Верхоянска", "Оймякона", "Якутска", "Норильска"], correct: 1 },
+  { type: 'choice', q: "Самая длинная река Восточной Сибири:", options: ["Обь", "Енисей", "Лена", "Амур"], correct: 2 },
+  { type: 'choice', q: "Самое глубокое озеро мира:", options: ["Байкал", "Ладожское", "Каспийское", "Таймыр"], correct: 0 },
+  { type: 'choice', q: "Для какой территории характерна сплошная вечная мерзлота?", options: ["Западной Сибири", "Восточной Сибири", "Урала", "Европейского Севера"], correct: 1 },
+  { type: 'choice', q: "Крупнейший нефтегазоносный район России:", options: ["Западная Сибирь", "Восточная Сибирь", "Урал", "Европейский Север"], correct: 0 },
+  { type: 'choice', q: "Васюганские болота расположены в:", options: ["Западной Сибири", "Восточной Сибири", "на Урале", "на Дальнем Востоке"], correct: 0 },
+  { type: 'choice', q: "Крупнейший город Западной Сибири:", options: ["Омск", "Тюмень", "Новосибирск", "Сургут"], correct: 2 },
+  { type: 'choice', q: "Западно-Сибирская равнина — это преимущественно:", options: ["Плоскогорье", "Низменность", "Горы", "Плато"], correct: 1 },
+  { type: 'choice', q: "Урал традиционно называют:", options: ["Каменным поясом России", "Щитом России", "Крышей России", "Житницей России"], correct: 0 },
+  { type: 'choice', q: "Самая высокая гора Урала:", options: ["Эльбрус", "Народная", "Ямантау", "Конжаковский Камень"], correct: 1 },
+  { type: 'choice', q: "Крупнейший центр чёрной металлургии Урала:", options: ["Екатеринбург", "Челябинск", "Магнитогорск", "Пермь"], correct: 2 },
+  { type: 'choice', q: "Какие полезные ископаемые преобладают на Урале?", options: ["Нефть и газ", "Руды чёрных и цветных металлов", "Каменный уголь", "Алмазы"], correct: 1 },
+  { type: 'choice', q: "Незамерзающий порт России на севере:", options: ["Архангельск", "Мурманск", "Нарьян-Мар", "Санкт-Петербург"], correct: 1 },
+  { type: 'choice', q: "В Хибинах добывают:", options: ["Нефть", "Апатиты", "Золото", "Алмазы"], correct: 1 },
+  { type: 'choice', q: "Крупнейший центр чёрной металлургии Европейского Севера:", options: ["Мурманск", "Череповец", "Архангельск", "Петрозаводск"], correct: 1 },
+  // Открытый вопрос с самопроверкой (по карте)
+  { type: 'text', q: "Рассмотрите карту экономических районов России. Напишите название экономического района, который обозначен на карте цифрой 1.", correct: "Северный", variants: ["Северный", "Северный район", "Северный экономический район"] }
+];
+
+let attempt = 1;
+let checked = false;
+
+function renderQuiz() {
+  const container = document.getElementById('quiz');
+  container.innerHTML = '';
+  questions.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'question';
+    div.id = 'q' + i;
+    let html = '<p><span class="num">' + (i + 1) + '.</span> ' + item.q + '</p>';
+    if (item.type === 'choice') {
+      item.options.forEach((opt, j) => {
+        html += '<label><input type="radio" name="q' + i + '" value="' + j + '"> ' + opt + '</label>';
+      });
+    } else if (item.type === 'text') {
+      html += '<input type="text" name="q' + i + '" placeholder="Введите ответ...">';
+    }
+    div.innerHTML = html;
+    container.appendChild(div);
+  });
+}
+
+function checkAnswers() {
+  if (checked) return;
+  let score = 0;
+  let allAnswered = true;
+
+  questions.forEach((item, i) => {
+    const qDiv = document.getElementById('q' + i);
+    if (item.type === 'choice') {
+      const selected = document.querySelector('input[name="q' + i + '"]:checked');
+      if (!selected) { allAnswered = false; return; }
+      const val = parseInt(selected.value);
+      if (val === item.correct) {
+        score++;
+        qDiv.classList.add('correct');
+      } else {
+        qDiv.classList.add('wrong');
+      }
+      document.querySelectorAll('input[name="q' + i + '"]').forEach(inp => inp.disabled = true);
+    } else if (item.type === 'text') {
+      const input = document.querySelector('input[name="q' + i + '"]');
+      const val = input.value.trim().toLowerCase();
+      if (!val) { allAnswered = false; return; }
+      const isCorrect = item.variants.some(v => v.toLowerCase() === val) || val === item.correct.toLowerCase();
+      if (isCorrect) {
+        score++;
+        qDiv.classList.add('correct');
+      } else {
+        qDiv.classList.add('wrong');
+      }
+      // Показываем правильный ответ
+      const feedback = document.createElement('div');
+      feedback.className = 'answer-feedback ' + (isCorrect ? 'correct' : 'wrong');
+      feedback.textContent = isCorrect ? 'Верно!' : 'Правильный ответ: ' + item.correct;
+      qDiv.appendChild(feedback);
+      input.disabled = true;
+    }
+  });
+
+  if (!allAnswered) {
+    alert('Ответьте, пожалуйста, на все вопросы перед проверкой.');
+    questions.forEach((item, i) => {
+      document.getElementById('q' + i).classList.remove('correct', 'wrong');
+      document.querySelectorAll('input[name="q' + i + '"]').forEach(inp => inp.disabled = false);
+      const fb = document.querySelector('#q' + i + ' .answer-feedback');
+      if (fb) fb.remove();
+    });
+    return;
+  }
+
+  checked = true;
+  document.getElementById('score-value').textContent = score;
+  let grade = '2';
+  if (score >= 18) grade = '5';
+  else if (score >= 14) grade = '4';
+  else if (score >= 10) grade = '3';
+  document.getElementById('grade-value').textContent = grade;
+
+  const resultDiv = document.getElementById('result');
+  resultDiv.classList.add('show');
+
+  const attemptInfo = document.getElementById('attempt-info');
+  const retryBtn = document.getElementById('retry-btn');
+  const checkBtn = document.getElementById('check-btn');
+
+  if (attempt === 1) {
+    attemptInfo.textContent = 'Это была первая попытка. У вас осталась одна попытка.';
+    retryBtn.style.display = 'inline-block';
+    checkBtn.style.display = 'none';
+  } else {
+    attemptInfo.textContent = 'Это была вторая попытка. Попытки исчерпаны.';
+    retryBtn.style.display = 'none';
+    checkBtn.style.display = 'none';
+    document.getElementById('final-message').classList.add('show');
+  }
+
+  resultDiv.scrollIntoView({ behavior: 'smooth' });
+}
+
+function retry() {
+  attempt = 2;
+  checked = false;
+  document.getElementById('quiz').innerHTML = '';
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('final-message').classList.remove('show');
+  document.getElementById('check-btn').style.display = 'inline-block';
+  document.getElementById('attempt-badge').textContent = 'Попытка 2 из 2';
+  document.getElementById('attempt-badge').classList.add('second');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  renderQuiz();
+}
+
+document.getElementById('check-btn').addEventListener('click', checkAnswers);
+document.getElementById('retry-btn').addEventListener('click', retry);
+
+renderQuiz();
+</script>
+
+</body>
+</html>
