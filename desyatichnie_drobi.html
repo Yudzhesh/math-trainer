@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тренажёр · Десятичные и обыкновенные дроби</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:'Segoe UI',system-ui,-apple-system,"Helvetica Neue",sans-serif;
+    background:#eef2f9;color:#1e293b;line-height:1.55;
+  }
+  [hidden]{display:none!important}
+
+  header{
+    background:linear-gradient(135deg,#4f46e5,#7c3aed 55%,#0ea5e9);
+    color:#fff;padding:26px 18px 22px;text-align:center;
+  }
+  header h1{margin:0 0 6px;font-size:clamp(19px,3.4vw,29px);letter-spacing:.2px}
+  header p{margin:0;opacity:.92;font-size:14px}
+  .stats{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+  .stat{background:rgba(255,255,255,.18);border-radius:999px;padding:5px 14px;font-size:14px}
+  .stat b{font-size:15px}
+
+  nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:16px 12px 4px;max-width:1000px;margin:0 auto}
+  .tab{
+    border:1px solid #d5dbea;background:#fff;color:#334155;padding:9px 15px;border-radius:999px;
+    cursor:pointer;font-size:13.5px;font-weight:600;font-family:inherit;transition:.18s;
+  }
+  .tab:hover{border-color:#a5b4fc;color:#4338ca;transform:translateY(-1px)}
+  .tab.active{
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-color:transparent;
+    box-shadow:0 6px 16px rgba(79,70,229,.32);
+  }
+
+  main{max-width:880px;margin:0 auto;padding:14px 16px 70px}
+
+  .theory{
+    background:#fff;border-radius:16px;padding:18px 20px;margin-bottom:16px;
+    box-shadow:0 2px 10px rgba(30,41,59,.06);border:1px solid #e6eaf3;
+  }
+  .theory h3{margin:0 0 10px;font-size:17px;color:#4338ca}
+  .theory p{margin:8px 0;font-size:14.5px}
+  .theory ul{margin:8px 0;padding-left:22px;font-size:14.5px}
+  .theory li{margin:4px 0}
+  .formula{
+    background:linear-gradient(135deg,#eef2ff,#f5f3ff);border-left:4px solid #6366f1;
+    padding:10px 14px;border-radius:10px;margin:12px 0;font-size:15px;font-weight:600;
+    color:#3730a3;overflow-x:auto;
+  }
+  .ex{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px;padding:10px 14px;font-size:14px;margin-top:10px;color:#334155}
+
+  .card{
+    background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(30,41,59,.06);
+    border:1px solid #e6eaf3;
+  }
+  .task{font-size:17px;margin-bottom:6px}
+  .task p{margin:6px 0}
+  .muted{color:#64748b;font-size:13.5px}
+  .big{font-size:22px;color:#4338ca}
+  code{background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:6px;font-size:14px;font-family:ui-monospace,Consolas,monospace}
+  sup{font-size:.72em}
+
+  .inputs{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin:16px 0 14px}
+  .field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:#64748b}
+  .field span{display:flex;align-items:center;gap:4px}
+
+  .ans{
+    border:2px solid #d5dbea;border-radius:10px;padding:9px 12px;font-size:16px;font-family:inherit;
+    min-width:88px;outline:none;transition:.15s;background:#fff;color:#1e293b;
+  }
+  .ans.wide{min-width:230px}
+  .ans:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+  .ans.ok{border-color:#16a34a;background:#f0fdf4;box-shadow:0 0 0 3px rgba(22,163,74,.14)}
+  .ans.bad{border-color:#dc2626;background:#fef2f2;box-shadow:0 0 0 3px rgba(220,38,38,.13)}
+
+  .frac-input{display:inline-flex;flex-direction:column;align-items:center}
+  .frac-input input{
+    width:104px;text-align:center;border:2px solid #d5dbea;padding:8px 6px;font-size:16px;
+    font-family:inherit;outline:none;background:#fff;color:#1e293b;
+  }
+  .frac-input input:first-child{border-radius:10px 10px 0 0;border-bottom:none}
+  .frac-input input:last-child{border-radius:0 0 10px 10px;border-top:none}
+  .frac-input .frac-line{width:104px;height:2px;background:#94a3b8}
+  .frac-input input:focus{background:#eef2ff}
+
+  .actions{display:flex;gap:9px;flex-wrap:wrap}
+  .btn{
+    border:1px solid #d5dbea;background:#fff;color:#334155;padding:10px 17px;border-radius:11px;
+    cursor:pointer;font-size:14.5px;font-weight:600;font-family:inherit;transition:.15s;
+  }
+  .btn:hover{border-color:#a5b4fc;color:#4338ca;transform:translateY(-1px)}
+  .btn.primary{
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-color:transparent;
+    box-shadow:0 5px 14px rgba(79,70,229,.3);
+  }
+  .btn.primary:hover{color:#fff;box-shadow:0 7px 18px rgba(79,70,229,.4)}
+  .btn.ghost{background:#f8fafc}
+
+  .feedback{margin-top:14px;font-size:15px;border-radius:12px;display:none}
+  .feedback.show{display:block;padding:12px 15px}
+  .feedback.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}
+  .feedback.bad{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
+  .feedback.warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+
+  .solution{
+    margin-top:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;
+    padding:0;font-size:14.5px;color:#334155;display:none;
+  }
+  .solution.show{display:block;padding:14px 16px}
+  .solution p{margin:6px 0}
+  .mono{font-family:ui-monospace,Consolas,monospace;font-size:13.5px;line-height:1.9;color:#334155}
+
+  .frac{
+    display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;
+    margin:0 3px;font-weight:700;line-height:1.15;
+  }
+  .frac .num{border-bottom:2px solid currentColor;padding:0 7px 1px}
+  .frac .den{padding:1px 7px 0}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Тренажёр: десятичные и обыкновенные дроби</h1>
+  <p>Разряды · сравнение · действия с десятичными · обыкновенные дроби · смешанные числа</p>
+  <div class="stats">
+    <span class="stat">✅ Верно: <b id="stat-ok">0</b></span>
+    <span class="stat">📊 Попыток: <b id="stat-total">0</b></span>
+    <span class="stat">🔥 Серия: <b id="stat-streak">0</b></span>
+  </div>
+</header>
+
+<nav>
+  <button class="tab active" data-key="read">1. Чтение и разряды</button>
+  <button class="tab" data-key="cmp">2. Сравнение</button>
+  <button class="tab" data-key="addsub">3. Сложение и вычитание</button>
+  <button class="tab" data-key="mul10">4. × и : на 10, 100, 1000</button>
+  <button class="tab" data-key="mulnat">5. Умножение на число</button>
+  <button class="tab" data-key="divnat">6. Деление на число</button>
+  <button class="tab" data-key="reduce">7. Сокращение</button>
+  <button class="tab" data-key="fracadd">8. Дроби: + и −</button>
+  <button class="tab" data-key="fracmul">9. Дроби: × и :</button>
+  <button class="tab" data-key="mixed">10. Смешанные числа</button>
+</nav>
+
+<main>
+
+<!-- ================= 1. ЧТЕНИЕ И РАЗРЯДЫ ================= -->
+<section class="panel" id="panel-read">
+  <div class="theory">
+    <h3>Разряды десятичной дроби</h3>
+    <p>Десятичная дробь — это число с целой и дробной частью. Их разделяет запятая.</p>
+    <ul>
+      <li><b>Целая часть</b> — до запятой.</li>
+      <li><b>Десятые</b> — первая цифра после запятой.</li>
+      <li><b>Сотые</b> — вторая цифра после запятой.</li>
+      <li><b>Тысячные</b> — третья цифра после запятой.</li>
+    </ul>
+    <div class="formula">3,<u>4</u>5 — 4 десятых, 5 сотых.</div>
+    <div class="ex"><b>Пример.</b> 12,345 — 12 целых, 3 десятых, 4 сотых, 5 тысячных.</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 2. СРАВНЕНИЕ ================= -->
+<section class="panel" id="panel-cmp" hidden>
+  <div class="theory">
+    <h3>Сравнение десятичных дробей</h3>
+    <ul>
+      <li>Сначала сравниваем <b>целые части</b>.</li>
+      <li>Если равны — сравниваем <b>десятые</b>.</li>
+      <li>Если равны — <b>сотые</b> и так далее.</li>
+      <li>Если цифр после запятой разное количество, можно уравнять нулями: 0,5 = 0,50.</li>
+    </ul>
+    <div class="formula">2,5 &gt; 2,45, потому что 5 десятых &gt; 4 десятых</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 3. СЛОЖЕНИЕ И ВЫЧИТАНИЕ ================= -->
+<section class="panel" id="panel-addsub" hidden>
+  <div class="theory">
+    <h3>Сложение и вычитание десятичных дробей</h3>
+    <p>Главное правило: <b>запятая под запятой</b>.</p>
+    <ul>
+      <li>Записываем дроби так, чтобы запятые стояли друг под другом.</li>
+      <li>Если цифр после запятой разное количество — уравниваем нулями.</li>
+      <li>Складываем или вычитаем как обычные числа.</li>
+      <li>В ответе ставим запятую под запятыми.</li>
+    </ul>
+    <div class="formula">1,25 + 2,3 = 1,25 + 2,30 = 3,55</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 4. УМНОЖЕНИЕ И ДЕЛЕНИЕ НА 10, 100, 1000 ================= -->
+<section class="panel" id="panel-mul10" hidden>
+  <div class="theory">
+    <h3>Умножение и деление на 10, 100, 1000</h3>
+    <p>Запятая «переезжает».</p>
+    <ul>
+      <li><b>Умножение:</b> вправо на 1, 2 или 3 знака.</li>
+      <li><b>Деление:</b> влево на 1, 2 или 3 знака.</li>
+      <li>Если цифр не хватает — дописываем нули.</li>
+    </ul>
+    <div class="formula">2,5 · 100 = 250, &nbsp; 2,5 : 100 = 0,025</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 5. УМНОЖЕНИЕ НА ЧИСЛО ================= -->
+<section class="panel" id="panel-mulnat" hidden>
+  <div class="theory">
+    <h3>Умножение десятичной дроби на натуральное число</h3>
+    <ul>
+      <li>Умножаем числа, <b>не обращая внимания</b> на запятую.</li>
+      <li>Считаем, сколько цифр после запятой в дроби.</li>
+      <li>В ответе отделяем запятой столько же цифр справа.</li>
+    </ul>
+    <div class="formula">1,25 · 4 → 125 · 4 = 500 → отделяем 2 цифры → 5,00 = 5</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 6. ДЕЛЕНИЕ НА ЧИСЛО ================= -->
+<section class="panel" id="panel-divnat" hidden>
+  <div class="theory">
+    <h3>Деление десятичной дроби на натуральное число</h3>
+    <ul>
+      <li>Делим как обычные числа.</li>
+      <li>Когда заканчивается целая часть — ставим в частном <b>запятую</b>.</li>
+      <li>Продолжаем деление.</li>
+    </ul>
+    <div class="formula">4,5 : 3 = 1,5 &nbsp;&nbsp; (4 : 3 = 1 ост. 1; ставим запятую; 15 : 3 = 5)</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 7. СОКРАЩЕНИЕ ДРОБЕЙ ================= -->
+<section class="panel" id="panel-reduce" hidden>
+  <div class="theory">
+    <h3>Сокращение обыкновенных дробей</h3>
+    <p><b>Основное свойство дроби:</b> если числитель и знаменатель разделить на одно и то же число, значение дроби не изменится.</p>
+    <div class="formula">a / b = (a : c) / (b : c)</div>
+    <ul>
+      <li>Находим НОД числителя и знаменателя.</li>
+      <li>Делим оба на этот НОД.</li>
+      <li>Если НОД = 1 — дробь уже несократимая.</li>
+    </ul>
+    <div class="ex"><b>Пример.</b> 24/36: НОД = 12 → 2/3</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 8. ДРОБИ: СЛОЖЕНИЕ И ВЫЧИТАНИЕ ================= -->
+<section class="panel" id="panel-fracadd" hidden>
+  <div class="theory">
+    <h3>Сложение и вычитание обыкновенных дробей</h3>
+    <p>Складывать и вычитать можно только дроби с <b>одинаковыми знаменателями</b>.</p>
+    <ul>
+      <li>Приводим к общему знаменателю (лучше — к НОК).</li>
+      <li>Складываем или вычитаем только числители.</li>
+      <li>Ответ сокращаем. Неправильная дробь — нормальный ответ.</li>
+    </ul>
+    <div class="formula">5/6 + 3/8 = 20/24 + 9/24 = 29/24</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 9. ДРОБИ: УМНОЖЕНИЕ И ДЕЛЕНИЕ ================= -->
+<section class="panel" id="panel-fracmul" hidden>
+  <div class="theory">
+    <h3>Умножение и деление обыкновенных дробей</h3>
+    <p>Общий знаменатель здесь <b>не нужен</b>!</p>
+    <div class="formula">a/b · c/d = (a·c) / (b·d)</div>
+    <div class="formula">a/b : c/d = a/b · d/c</div>
+    <ul>
+      <li>Умножение: числитель × числитель, знаменатель × знаменатель.</li>
+      <li>Деление: умножаем на <b>обратную</b> дробь (переворачиваем делитель).</li>
+      <li>Можно сокращать «крест-накрест» — так числа меньше.</li>
+    </ul>
+    <div class="ex"><b>Пример.</b> 3/8 : 1/4 = 3/8 · 4/1 = 12/8 = 3/2</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 10. СМЕШАННЫЕ ЧИСЛА ================= -->
+<section class="panel" id="panel-mixed" hidden>
+  <div class="theory">
+    <h3>Смешанные числа</h3>
+    <p><b>Смешанное число</b> — это целая часть и дробная часть вместе: 1&nbsp;2/3.</p>
+    <ul>
+      <li>Чтобы перевести неправильную дробь в смешанное число, делим числитель на знаменатель.</li>
+      <li>Частное — целая часть, остаток — числитель, знаменатель тот же.</li>
+      <li>Чтобы перевести смешанное число в неправильную дробь: целую часть умножаем на знаменатель и прибавляем числитель.</li>
+    </ul>
+    <div class="formula">7/3 = 2&nbsp;1/3, &nbsp; 2&nbsp;1/3 = 7/3</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ==================================================================
+   УТИЛИТЫ
+   ================================================================== */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+const rnd  = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+function shuffle(a){
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function gcd(a, b){ a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+function lcm(a, b){ return a / gcd(a, b) * b; }
+
+function frac(n, d){
+  return `<span class="frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+}
+function mixed(whole, n, d){
+  return `${whole}&nbsp;${frac(n, d)}`;
+}
+/* Красивое отображение десятичной дроби с запятой */
+function decStr(num, digits){
+  // Возвращает строку без завершающих нулей, но с хотя бы одной цифрой после запятой, если digits>0
+  let s = num.toFixed(digits);
+  if (digits > 0) s = s.replace(/0+$/, '');
+  if (s.endsWith('.')) s = s.slice(0, -1);
+  if (!s.includes(',') && !s.includes('.')) return s;
+  return s.replace('.', ',');
+}
+function decStrFixed(num, digits){
+  return num.toFixed(digits).replace('.', ',');
+}
+function parseDec(s){
+  if (s === null || s === undefined) return null;
+  let t = String(s).trim().replace(/\s+/g, '').replace(',', '.');
+  if (!/^-?\d+(\.\d+)?$/.test(t)) return null;
+  return parseFloat(t);
+}
+function toInt(s){
+  if (s === null || s === undefined) return null;
+  const t = String(s).replace(/\s+/g, '');
+  if (!/^-?\d+$/.test(t)) return null;
+  return parseInt(t, 10);
+}
+
+/* ==================================================================
+   СТАТИСТИКА
+   ================================================================== */
+const stats = { ok: 0, total: 0, streak: 0 };
+function updateStats(){
+  $('#stat-ok').textContent     = stats.ok;
+  $('#stat-total').textContent  = stats.total;
+  $('#stat-streak').textContent = stats.streak;
+}
+
+/* ==================================================================
+   ДВИЖОК ТРЕНАЖЁРА
+   ================================================================== */
+const trainers = {};
+
+function initTrainer(key, cfg){
+  const panel    = document.getElementById('panel-' + key);
+  const taskEl   = panel.querySelector('[data-role="task"]');
+  const inputsEl = panel.querySelector('[data-role="inputs"]');
+  const fbEl     = panel.querySelector('[data-role="feedback"]');
+  const solEl    = panel.querySelector('[data-role="solution"]');
+
+  const st = { cfg, panel, taskEl, inputsEl, fbEl, solEl, task: null, answered: false };
+  trainers[key] = st;
+
+  st.newTask = function(){
+    st.task = cfg.gen();
+    st.answered = false;
+    taskEl.innerHTML   = cfg.taskHTML(st.task);
+    inputsEl.innerHTML = cfg.inputsHTML(st.task);
+    fbEl.className = 'feedback';
+    fbEl.innerHTML = '';
+    solEl.className = 'solution';
+    solEl.innerHTML = '';
+
+    $$('.ans', inputsEl).forEach(inp => {
+      inp.addEventListener('input', () => inp.classList.remove('ok', 'bad'));
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter'){ e.preventDefault(); doCheck(key); }
+      });
+    });
+    const first = $('.ans', inputsEl);
+    if (first && !panel.hidden) first.focus();
+  };
+
+  panel.querySelector('[data-act="check"]').onclick    = () => doCheck(key);
+  panel.querySelector('[data-act="solution"]').onclick = () => showSolution(key);
+  panel.querySelector('[data-act="new"]').onclick      = () => st.newTask();
+  panel.querySelector('[data-act="hint"]').onclick     = () => showFeedback(st, 'warn', '💡 ' + cfg.hint);
+
+  st.newTask();
+}
+
+function showFeedback(st, status, html){
+  st.fbEl.className = 'feedback show ' + status;
+  st.fbEl.innerHTML = html;
+}
+
+function doCheck(key){
+  const st = trainers[key];
+  if (!st) return;
+
+  const vals = {};
+  $$('.ans', st.panel).forEach(i => vals[i.dataset.name] = i.value.trim());
+
+  for (const k in vals){
+    if (vals[k] === ''){ showFeedback(st, 'warn', 'Заполните все поля 🙂'); return; }
+  }
+
+  const res = st.cfg.check(st.task, vals);
+  $$('.ans', st.panel).forEach(i => i.classList.remove('ok', 'bad'));
+
+  if (res.status === 'ok' || res.status === 'warn'){
+    $$('.ans', st.panel).forEach(i => i.classList.add('ok'));
+    if (!st.answered){
+      st.answered = true;
+      stats.total++;
+      if (res.status === 'ok'){ stats.ok++; stats.streak++; }
+      else { stats.streak = 0; }
+      updateStats();
+    }
+  } else {
+    $$('.ans', st.panel).forEach(i => i.classList.add('bad'));
+    if (!st.answered){
+      st.answered = true;
+      stats.total++;
+      stats.streak = 0;
+      updateStats();
+    }
+  }
+  showFeedback(st, res.status, res.msg);
+}
+
+function showSolution(key){
+  const st = trainers[key];
+  if (!st) return;
+  st.solEl.innerHTML = '<b>Решение:</b>' + st.cfg.solution(st.task);
+  st.solEl.classList.add('show');
+}
+
+/* ==================================================================
+   1. ЧТЕНИЕ И РАЗРЯДЫ
+   ================================================================== */
+function genRead(){
+  // Генерируем дробь с 2-3 знаками после запятой
+  const whole = rnd(0, 99);
+  const digits = rnd(2, 3);
+  let fracPart = '';
+  for (let i = 0; i < digits; i++) fracPart += rnd(i === 0 ? 1 : 0, 9);
+  const num = parseFloat(whole + '.' + fracPart);
+  const numStr = num.toFixed(digits).replace('.', ',');
+
+  // Какой разряд спрашиваем?
+  const places = ['десятых', 'сотых', 'тысячных'].slice(0, digits);
+  const idx = rnd(0, digits - 1);
+  const place = places[idx];
+  const digit = +fracPart[idx];
+
+  return { whole, digits, fracPart, numStr, place, digit, num };
+}
+function checkRead(t, a){
+  const v = toInt(a.val);
+  if (v === null) return { status: 'bad', msg: 'Ответ должен быть целым числом.' };
+  if (v === t.digit) return { status: 'ok', msg: `Верно! Цифра ${t.digit} стоит в разряде ${t.place}.` };
+  return { status: 'bad', msg: `Неверно. Цифры после запятой идут по порядку: десятые, сотые, тысячные.` };
+}
+function solRead(t){
+  const digits = t.fracPart.split('');
+  const names = ['десятых', 'сотых', 'тысячных'].slice(0, t.digits);
+  const lines = digits.map((d, i) => `${d} — ${names[i]}`).join('<br>');
+  return `<p>Число ${t.numStr}. Цифры после запятой:</p>
+    <p class="mono">${lines}</p>
+    <p>Значит, в разряде ${t.place} стоит <b>${t.digit}</b>.</p>`;
+}
+
+/* ==================================================================
+   2. СРАВНЕНИЕ
+   ================================================================== */
+function genCmp(){
+  let a, b;
+  const mode = rnd(1, 3);
+  if (mode === 1){
+    // разные целые части
+    a = +(rnd(1, 9) + '.' + rnd(1, 9));
+    b = +(rnd(1, 9) + '.' + rnd(1, 9));
+  } else if (mode === 2){
+    // одинаковые целые, разные десятые
+    const w = rnd(1, 9);
+    a = +(w + '.' + rnd(1, 9));
+    b = +(w + '.' + rnd(1, 9));
+  } else {
+    // хитрость: 0,5 и 0,45 — разное количество знаков
+    a = 0.5;
+    b = 0.45;
+    if (Math.random() < 0.5) [a, b] = [b, a];
+  }
+  if (a === b) return genCmp();
+  return { a, b };
+}
+function cmpHTML(a, b){
+  const sa = a.toString().replace('.', ',');
+  const sb = b.toString().replace('.', ',');
+  return `Сравните: <b class="big">${sa}</b> и <b class="big">${sb}</b>`;
+}
+function checkCmp(t, a){
+  const v = a.val.trim();
+  if (!['<', '>', '='].includes(v)) return { status: 'bad', msg: 'Введите один из знаков: <, > или =.' };
+  const correct = t.a > t.b ? '>' : (t.a < t.b ? '<' : '=');
+  if (v === correct) return { status: 'ok', msg: 'Верно!' };
+  return { status: 'bad', msg: 'Неверно. Сравнивайте по разрядам слева направо.' };
+}
+function solCmp(t){
+  const sa = t.a.toString().replace('.', ',');
+  const sb = t.b.toString().replace('.', ',');
+  const sign = t.a > t.b ? '>' : '<';
+  let expl = '';
+  if (Math.floor(t.a) !== Math.floor(t.b)){
+    expl = `Целые части: ${Math.floor(t.a)} и ${Math.floor(t.b)}.`;
+  } else {
+    // сравниваем десятые
+    const da = Math.floor(t.a * 10) % 10;
+    const db = Math.floor(t.b * 10) % 10;
+    expl = `Целые равны. Десятые: ${da} и ${db}.`;
+  }
+  return `<p>${expl}</p><p>Значит, ${sa} ${sign} ${sb}.</p>`;
+}
+
+/* ==================================================================
+   3. СЛОЖЕНИЕ И ВЫЧИТАНИЕ ДЕСЯТИЧНЫХ
+   ================================================================== */
+function genAddSubDec(){
+  // Генерируем два числа с 1-2 знаками после запятой
+  const d1 = rnd(1, 2), d2 = rnd(1, 2);
+  const maxD = Math.max(d1, d2);
+  const a = +(rnd(1, 30) + '.' + String(rnd(1, Math.pow(10, d1) - 1)).padStart(d1, '0'));
+  const b = +(rnd(1, 30) + '.' + String(rnd(1, Math.pow(10, d2) - 1)).padStart(d2, '0'));
+  const op = Math.random() < 0.5 ? '+' : '−';
+  let res;
+  if (op === '+'){ res = +(a + b).toFixed(maxD); }
+  else {
+    if (a < b) return genAddSubDec();
+    res = +(a - b).toFixed(maxD);
+  }
+  return { a, b, op, res, digits: maxD };
+}
+function checkAddSubDec(t, a){
+  const v = parseDec(a.val);
+  if (v === null) return { status: 'bad', msg: 'Введите число, например 3,5 или 12,75.' };
+  if (Math.abs(v - t.res) < 1e-9) return { status: 'ok', msg: 'Верно! 🎉' };
+  return { status: 'bad', msg: 'Неверно. Запятая под запятой. Уравняйте количество цифр после запятой нулями.' };
+}
+function solAddSubDec(t){
+  const sa = decStrFixed(t.a, t.digits);
+  const sb = decStrFixed(t.b, t.digits);
+  const sr = decStrFixed(t.res, t.digits);
+  return `<p>Записываем с одинаковым количеством знаков после запятой:</p>
+    <p class="mono">${sa}<br>${t.op} ${sb}<br>= ${sr}</p>
+    <p>Ответ: <b>${sr.replace(/,0+$/, '').replace(/,$/, '')}</b></p>`;
+}
+
+/* ==================================================================
+   4. УМНОЖЕНИЕ И ДЕЛЕНИЕ НА 10, 100, 1000
+   ================================================================== */
+function genMul10(){
+  const digits = rnd(1, 2);
+  const whole = rnd(1, 99);
+  const fracPart = String(rnd(0, Math.pow(10, digits) - 1)).padStart(digits, '0');
+  const a = parseFloat(whole + '.' + fracPart);
+  const factor = pick([10, 100, 1000]);
+  const op = Math.random() < 0.5 ? '·' : ':';
+  let res;
+  if (op === '·') res = a * factor;
+  else res = a / factor;
+  // Округляем, чтобы убрать накопленную погрешность
+  const resDigits = Math.max(0, (fracPart.length) + (op === '·' ? 0 : String(factor).length - 1));
+  return { a, factor, op, res, digits };
+}
+function checkMul10(t, a){
+  const v = parseDec(a.val);
+  if (v === null) return { status: 'bad', msg: 'Введите число. Десятичную часть отделяйте запятой.' };
+  if (Math.abs(v - t.res) < 1e-9) return { status: 'ok', msg: 'Верно!' };
+  return { status: 'bad', msg: 'Неверно. Запятая переезжает вправо при умножении и влево при делении.' };
+}
+function solMul10(t){
+  const sa = t.a.toString().replace('.', ',');
+  const dir = t.op === '·' ? 'вправо' : 'влево';
+  const steps = String(t.factor).length - 1;
+  return `<p>Умножаем/делим на ${t.factor} — запятая переезжает ${dir} на ${steps} знак(а).</p>
+    <p>${sa} ${t.op} ${t.factor} = <b>${t.res.toString().replace('.', ',')}</b></p>`;
+}
+
+/* ==================================================================
+   5. УМНОЖЕНИЕ ДЕСЯТИЧНОЙ НА НАТУРАЛЬНОЕ ЧИСЛО
+   ================================================================== */
+function genMulNat(){
+  const digits = rnd(1, 2);
+  const whole = rnd(1, 20);
+  const fracPart = String(rnd(1, Math.pow(10, digits) - 1)).padStart(digits, '0');
+  const a = parseFloat(whole + '.' + fracPart);
+  const n = rnd(2, 9);
+  const res = +(a * n).toFixed(digits);
+  return { a, n, res, digits };
+}
+function checkMulNat(t, a){
+  const v = parseDec(a.val);
+  if (v === null) return { status: 'bad', msg: 'Введите число.' };
+  if (Math.abs(v - t.res) < 1e-9) return { status: 'ok', msg: 'Верно!' };
+  return { status: 'bad', msg: 'Неверно. Умножьте без запятой, потом отделите запятой столько же цифр.' };
+}
+function solMulNat(t){
+  const str = t.a.toFixed(t.digits).replace('.', '');
+  return `<p>Умножаем без запятой: ${str} · ${t.n} = ${+str * t.n}</p>
+    <p>В дроби ${t.digits} знак(а) после запятой — отделяем столько же цифр.</p>
+    <p>Ответ: <b>${t.res.toString().replace('.', ',')}</b></p>`;
+}
+
+/* ==================================================================
+   6. ДЕЛЕНИЕ ДЕСЯТИЧНОЙ НА НАТУРАЛЬНОЕ ЧИСЛО
+   ================================================================== */
+function genDivNat(){
+  // Подбираем так, чтобы делилось нацело (или давало 1-2 знака после запятой)
+  const digits = rnd(1, 2);
+  const n = rnd(2, 9);
+  // Создаём дробь, которая при делении на n даёт красивый результат
+  const resultWhole = rnd(1, 20);
+  const resultDigits = digits;
+  const resultFrac = String(rnd(0, Math.pow(10, resultDigits) - 1)).padStart(resultDigits, '0');
+  const result = parseFloat(resultWhole + '.' + resultFrac);
+  const a = +(result * n).toFixed(resultDigits);
+  return { a, n, res: result, digits: resultDigits };
+}
+function checkDivNat(t, a){
+  const v = parseDec(a.val);
+  if (v === null) return { status: 'bad', msg: 'Введите число.' };
+  if (Math.abs(v - t.res) < 1e-9) return { status: 'ok', msg: 'Верно!' };
+  return { status: 'bad', msg: 'Неверно. Делите как обычно, а запятую в частном ставьте, когда закончится целая часть.' };
+}
+function solDivNat(t){
+  return `<p>Делим ${t.a.toString().replace('.', ',')} на ${t.n}.</p>
+    <p>Когда заканчивается целая часть — ставим запятую в частном.</p>
+    <p>Ответ: <b>${t.res.toString().replace('.', ',')}</b></p>`;
+}
+
+/* ==================================================================
+   7. СОКРАЩЕНИЕ ДРОБЕЙ
+   ================================================================== */
+function genReduce(){
+  let n0 = rnd(1, 9);
+  let d0 = rnd(n0 + 1, 14);
+  const g0 = gcd(n0, d0);
+  n0 /= g0; d0 /= g0;
+  const k = rnd(2, 14);
+  return { num: n0 * k, den: d0 * k, rn: n0, rd: d0 };
+}
+function checkReduce(t, a){
+  const n = toInt(a.num), d = toInt(a.den);
+  if (n === null || d === null) return { status: 'bad', msg: 'Числитель и знаменатель должны быть целыми числами.' };
+  if (d === 0) return { status: 'bad', msg: 'Знаменатель не может быть нулём.' };
+  if (n * t.den !== t.num * d) return { status: 'bad', msg: 'Неверно. Найди НОД числителя и знаменателя и раздели оба на него.' };
+  if (gcd(Math.abs(n), Math.abs(d)) !== 1)
+    return { status: 'warn', msg: `Значение верное, но дробь ещё сократимая. До конца: ${frac(t.rn, t.rd)}` };
+  return { status: 'ok', msg: `Верно! ${frac(t.num, t.den)} = ${frac(t.rn, t.rd)}` };
+}
+function solReduce(t){
+  const g = gcd(t.num, t.den);
+  return `<p>НОД(${t.num}, ${t.den}) = ${g}</p>
+    <p>${t.num} : ${g} = ${t.num / g}, &nbsp; ${t.den} : ${g} = ${t.den / g}</p>
+    <p>${frac(t.num, t.den)} = <b>${frac(t.num / g, t.den / g)}</b></p>`;
+}
+
+/* ==================================================================
+   8. СЛОЖЕНИЕ И ВЫЧИТАНИЕ ОБЫКНОВЕННЫХ ДРОБЕЙ
+   ================================================================== */
+function genFracAdd(){
+  for (let t = 0; t < 300; t++){
+    const op = Math.random() < 0.5 ? '+' : '−';
+    const b = rnd(2, 12), d = rnd(2, 12);
+    const a = rnd(1, b - 1), c = rnd(1, d - 1);
+    const num = op === '+' ? a * d + c * b : a * d - c * b;
+    const den = b * d;
+    if (num <= 0) continue;
+    const g = gcd(num, den);
+    return { a, b, c, d, op, rn: num / g, rd: den / g };
+  }
+  return { a: 1, b: 2, c: 1, d: 3, op: '+', rn: 5, rd: 6 };
+}
+function checkFracValue(t, a){
+  const n = toInt(a.num), d = toInt(a.den);
+  if (n === null || d === null) return { status: 'bad', msg: 'Числитель и знаменатель должны быть целыми числами.' };
+  if (d === 0) return { status: 'bad', msg: 'Знаменатель не может быть нулём.' };
+  if (n * t.rd !== t.rn * d) return { status: 'bad', msg: 'Неверно. Проверь общий знаменатель и числители.' };
+  if (gcd(Math.abs(n), Math.abs(d)) !== 1)
+    return { status: 'warn', msg: `Значение верное, но дробь сократимая. Ответ: ${frac(t.rn, t.rd)}` };
+  return { status: 'ok', msg: 'Верно! 🎉' };
+}
+function solFracAdd(t){
+  const L = lcm(t.b, t.d);
+  const k1 = L / t.b, k2 = L / t.d;
+  const n1 = t.a * k1, n2 = t.c * k2;
+  const res = t.op === '+' ? n1 + n2 : n1 - n2;
+  const needReduce = (res !== t.rn || L !== t.rd);
+  return `<p>НОК(${t.b}, ${t.d}) = ${L}</p>
+    <p>${frac(t.a, t.b)} = ${frac(n1, L)}, &nbsp;&nbsp; ${frac(t.c, t.d)} = ${frac(n2, L)}</p>
+    <p>${frac(n1, L)} ${t.op} ${frac(n2, L)} = ${frac(res, L)}${needReduce ? ' = <b>' + frac(t.rn, t.rd) + '</b>' : ''}</p>`;
+}
+
+/* ==================================================================
+   9. УМНОЖЕНИЕ И ДЕЛЕНИЕ ОБЫКНОВЕННЫХ ДРОБЕЙ
+   ================================================================== */
+function genFracMul(){
+  for (let t = 0; t < 300; t++){
+    const op = Math.random() < 0.5 ? '·' : ':';
+    const b = rnd(2, 9), d = rnd(2, 9);
+    const a = rnd(1, b - 1), c = rnd(1, d - 1);
+    let num, den;
+    if (op === '·'){ num = a * c; den = b * d; }
+    else { num = a * d; den = b * c; }
+    if (den === 0 || num === 0) continue;
+    const g = gcd(num, den);
+    return { a, b, c, d, op, rn: num / g, rd: den / g };
+  }
+  return { a: 2, b: 3, c: 3, d: 4, op: '·', rn: 1, rd: 2 };
+}
+function solFracMul(t){
+  if (t.op === '·'){
+    const num = t.a * t.c, den = t.b * t.d;
+    const need = (num !== t.rn || den !== t.rd);
+    return `<p>${frac(t.a, t.b)} · ${frac(t.c, t.d)} = ${frac(`${t.a}·${t.c}`, `${t.b}·${t.d}`)} = ${frac(num, den)}${need ? ' = <b>' + frac(t.rn, t.rd) + '</b>' : ''}</p>`;
+  }
+  const num = t.a * t.d, den = t.b * t.c;
+  const need = (num !== t.rn || den !== t.rd);
+  return `<p>${frac(t.a, t.b)} : ${frac(t.c, t.d)} = ${frac(t.a, t.b)} · ${frac(t.d, t.c)} = ${frac(`${t.a}·${t.d}`, `${t.b}·${t.c}`)} = ${frac(num, den)}${need ? ' = <b>' + frac(t.rn, t.rd) + '</b>' : ''}</p>`;
+}
+
+/* ==================================================================
+   10. СМЕШАННЫЕ ЧИСЛА
+   ================================================================== */
+function genMixed(){
+  // Задание: перевести неправильную дробь в смешанное число или наоборот
+  const mode = Math.random() < 0.5 ? 'toMixed' : 'toFrac';
+  if (mode === 'toMixed'){
+    const d = rnd(2, 9);
+    const whole = rnd(1, 9);
+    const n = rnd(1, d - 1);
+    const num = whole * d + n;
+    return { mode, num, den: d, whole, n };
+  } else {
+    const d = rnd(2, 9);
+    const whole = rnd(1, 9);
+    const n = rnd(1, d - 1);
+    const num = whole * d + n;
+    return { mode, num, den: d, whole, n };
+  }
+}
+function checkMixed(t, a){
+  if (t.mode === 'toMixed'){
+    const w = toInt(a.whole), n = toInt(a.num), d = toInt(a.den);
+    if (w === null || n === null || d === null)
+      return { status: 'bad', msg: 'Все три поля должны быть целыми числами.' };
+    if (d !== t.den) return { status: 'bad', msg: `Знаменатель остаётся прежним: ${t.den}.` };
+    if (n >= d || n <= 0) return { status: 'bad', msg: 'Числитель должен быть от 1 до знаменателя − 1.' };
+    if (w === t.whole && n === t.n) return { status: 'ok', msg: `Верно! ${frac(t.num, t.den)} = ${mixed(t.whole, t.n, t.den)}` };
+    return { status: 'bad', msg: 'Неверно. Разделите числитель на знаменатель с остатком.' };
+  } else {
+    const n = toInt(a.num), d = toInt(a.den);
+    if (n === null || d === null) return { status: 'bad', msg: 'Числитель и знаменатель должны быть целыми.' };
+    if (d !== t.den) return { status: 'bad', msg: `Знаменатель остаётся прежним: ${t.den}.` };
+    if (n === t.num) return { status: 'ok', msg: `Верно! ${mixed(t.whole, t.n, t.den)} = ${frac(t.num, t.den)}` };
+    return { status: 'bad', msg: 'Неверно. Целую часть умножьте на знаменатель и прибавьте числитель.' };
+  }
+}
+function solMixed(t){
+  if (t.mode === 'toMixed'){
+    const whole = Math.floor(t.num / t.den);
+    const rest = t.num % t.den;
+    return `<p>Делим ${t.num} на ${t.den} с остатком:</p>
+      <p>${t.num} : ${t.den} = ${whole} (ост. ${rest})</p>
+      <p>Значит, ${frac(t.num, t.den)} = <b>${mixed(whole, rest, t.den)}</b></p>`;
+  } else {
+    const num = t.whole * t.den + t.n;
+    return `<p>Целую часть умножаем на знаменатель и прибавляем числитель:</p>
+      <p>${t.whole} · ${t.den} + ${t.n} = ${num}</p>
+      <p>Значит, ${mixed(t.whole, t.n, t.den)} = <b>${frac(num, t.den)}</b></p>`;
+  }
+}
+function mixedTaskHTML(t){
+  if (t.mode === 'toMixed'){
+    return `<p>Запишите неправильную дробь в виде <b>смешанного числа</b>:</p>
+      <p class="big">${frac(t.num, t.den)}</p>
+      <p class="muted">Введите целую часть, числитель и знаменатель дробной части.</p>`;
+  } else {
+    return `<p>Запишите смешанное число в виде <b>неправильной дроби</b>:</p>
+      <p class="big">${mixed(t.whole, t.n, t.den)}</p>
+      <p class="muted">Введите числитель и знаменатель.</p>`;
+  }
+}
+function mixedInputsHTML(t){
+  if (t.mode === 'toMixed'){
+    return `<label class="field"><span>Целая часть</span><input class="ans" data-name="whole" autocomplete="off"></label>
+      <div class="frac-input">
+        <input class="ans" data-name="num" placeholder="числ." autocomplete="off">
+        <div class="frac-line"></div>
+        <input class="ans" data-name="den" placeholder="знам." autocomplete="off">
+      </div>`;
+  } else {
+    return `<div class="frac-input">
+        <input class="ans" data-name="num" placeholder="числ." autocomplete="off">
+        <div class="frac-line"></div>
+        <input class="ans" data-name="den" placeholder="знам." autocomplete="off">
+      </div>`;
+  }
+}
+
+/* ==================================================================
+   РЕГИСТРАЦИЯ ТРЕНАЖЁРОВ
+   ================================================================== */
+initTrainer('read', {
+  gen: genRead,
+  taskHTML: t => `<p>В десятичной дроби <b class="big">${t.numStr}</b> какая цифра стоит в разряде <b>${t.place}</b>?</p>
+    <p class="muted">Например: разряд десятых — первая цифра после запятой.</p>`,
+  inputsHTML: () => `<label class="field"><span>Цифра =</span><input class="ans" data-name="val" autocomplete="off"></label>`,
+  check: checkRead,
+  solution: solRead,
+  hint: 'Десятые — первая цифра после запятой, сотые — вторая, тысячные — третья.'
+});
+
+initTrainer('cmp', {
+  gen: genCmp,
+  taskHTML: t => `<p>${cmpHTML(t.a, t.b)}</p>
+    <p class="muted">Введите один знак: <code>&lt;</code>, <code>&gt;</code> или <code>=</code>.</p>`,
+  inputsHTML: () => `<label class="field"><span>Знак</span><input class="ans" data-name="val" placeholder="<, > или =" autocomplete="off" style="min-width:60px;text-align:center"></label>`,
+  check: checkCmp,
+  solution: solCmp,
+  hint: 'Сравнивайте по разрядам слева направо: сначала целые части, потом десятые, потом сотые.'
+});
+
+initTrainer('addsub', {
+  gen: genAddSubDec,
+  taskHTML: t => {
+    const sa = t.a.toString().replace('.', ',');
+    const sb = t.b.toString().replace('.', ',');
+    return `<p>Вычислите:</p>
+      <p class="big">${sa} ${t.op} ${sb}</p>
+      <p class="muted">Ответ введите десятичной дробью, например 5,75.</p>`;
+  },
+  inputsHTML: () => `<label class="field"><span>Ответ =</span><input class="ans wide" data-name="val" autocomplete="off" placeholder="например: 12,75"></label>`,
+  check: checkAddSubDec,
+  solution: solAddSubDec,
+  hint: 'Запятая под запятой. Если цифр после запятой разное количество — уравняйте нулями.'
+});
+
+initTrainer('mul10', {
+  gen: genMul10,
+  taskHTML: t => `<p>Вычислите:</p>
+    <p class="big">${t.a.toString().replace('.', ',')} ${t.op} ${t.factor}</p>`,
+  inputsHTML: () => `<label class="field"><span>Ответ =</span><input class="ans wide" data-name="val" autocomplete="off" placeholder="например: 25,4"></label>`,
+  check: checkMul10,
+  solution: solMul10,
+  hint: 'При умножении на 10/100/1000 запятая едет вправо. При делении — влево. На 1, 2 или 3 знака.'
+});
+
+initTrainer('mulnat', {
+  gen: genMulNat,
+  taskHTML: t => `<p>Вычислите:</p>
+    <p class="big">${t.a.toString().replace('.', ',')} · ${t.n}</p>`,
+  inputsHTML: () => `<label class="field"><span>Ответ =</span><input class="ans wide" data-name="val" autocomplete="off"></label>`,
+  check: checkMulNat,
+  solution: solMulNat,
+  hint: 'Умножьте числа без запятой, затем отделите запятой столько цифр, сколько их было после запятой в дроби.'
+});
+
+initTrainer('divnat', {
+  gen: genDivNat,
+  taskHTML: t => `<p>Вычислите:</p>
+    <p class="big">${t.a.toString().replace('.', ',')} : ${t.n}</p>`,
+  inputsHTML: () => `<label class="field"><span>Ответ =</span><input class="ans wide" data-name="val" autocomplete="off"></label>`,
+  check: checkDivNat,
+  solution: solDivNat,
+  hint: 'Делите как обычные числа. Когда закончится целая часть — поставьте в частном запятую.'
+});
+
+initTrainer('reduce', {
+  gen: genReduce,
+  taskHTML: t => `<p>Сократите дробь: <b class="big">${frac(t.num, t.den)}</b></p>
+    <p class="muted">Ответ запишите несократимой дробью.</p>`,
+  inputsHTML: () => `
+    <div class="frac-input">
+      <input class="ans" data-name="num" placeholder="числ." autocomplete="off">
+      <div class="frac-line"></div>
+      <input class="ans" data-name="den" placeholder="знам." autocomplete="off">
+    </div>`,
+  check: checkReduce,
+  solution: solReduce,
+  hint: 'Найди НОД числителя и знаменателя и раздели оба числа на него.'
+});
+
+initTrainer('fracadd', {
+  gen: genFracAdd,
+  taskHTML: t => `<p>Вычислите:</p>
+    <p class="big">${frac(t.a, t.b)} ${t.op} ${frac(t.c, t.d)}</p>
+    <p class="muted">Ответ — несократимая дробь (можно неправильную, например 29/24).</p>`,
+  inputsHTML: () => `
+    <div class="frac-input">
+      <input class="ans" data-name="num" placeholder="числ." autocomplete="off">
+      <div class="frac-line"></div>
+      <input class="ans" data-name="den" placeholder="знам." autocomplete="off">
+    </div>`,
+  check: checkFracValue,
+  solution: solFracAdd,
+  hint: 'Приведи дроби к общему знаменателю, потом складывай или вычитай только числители.'
+});
+
+initTrainer('fracmul', {
+  gen: genFracMul,
+  taskHTML: t => `<p>Вычислите:</p>
+    <p class="big">${frac(t.a, t.b)} ${t.op} ${frac(t.c, t.d)}</p>
+    <p class="muted">Ответ — несократимая дробь.</p>`,
+  inputsHTML: () => `
+    <div class="frac-input">
+      <input class="ans" data-name="num" placeholder="числ." autocomplete="off">
+      <div class="frac-line"></div>
+      <input class="ans" data-name="den" placeholder="знам." autocomplete="off">
+    </div>`,
+  check: checkFracValue,
+  solution: solFracMul,
+  hint: 'Умножение: числитель × числитель, знаменатель × знаменатель. Деление: умножь на обратную дробь.'
+});
+
+initTrainer('mixed', {
+  gen: genMixed,
+  taskHTML: mixedTaskHTML,
+  inputsHTML: mixedInputsHTML,
+  check: checkMixed,
+  solution: solMixed,
+  hint: 'Чтобы перевести дробь в смешанное число — дели числитель на знаменатель. Чтобы наоборот — умножай целую часть на знаменатель и прибавляй числитель.'
+});
+
+/* ==================================================================
+   ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+   ================================================================== */
+$$('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    $$('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    $$('.panel').forEach(p => p.hidden = true);
+    const panel = document.getElementById('panel-' + tab.dataset.key);
+    panel.hidden = false;
+    const first = $('.ans', panel);
+    if (first) first.focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+updateStats();
+</script>
+</body>
+</html>
