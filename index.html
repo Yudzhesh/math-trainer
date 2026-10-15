@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тренажёр · НОД, НОК и дроби</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:'Segoe UI',system-ui,-apple-system,"Helvetica Neue",sans-serif;
+    background:#eef2f9;color:#1e293b;line-height:1.55;
+  }
+  [hidden]{display:none!important}
+
+  /* ---------- Шапка ---------- */
+  header{
+    background:linear-gradient(135deg,#4f46e5,#7c3aed 55%,#0ea5e9);
+    color:#fff;padding:26px 18px 22px;text-align:center;
+  }
+  header h1{margin:0 0 6px;font-size:clamp(19px,3.4vw,29px);letter-spacing:.2px}
+  header p{margin:0;opacity:.92;font-size:14px}
+  .stats{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+  .stat{background:rgba(255,255,255,.18);border-radius:999px;padding:5px 14px;font-size:14px}
+  .stat b{font-size:15px}
+
+  /* ---------- Вкладки ---------- */
+  nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:16px 12px 4px;max-width:1000px;margin:0 auto}
+  .tab{
+    border:1px solid #d5dbea;background:#fff;color:#334155;padding:9px 15px;border-radius:999px;
+    cursor:pointer;font-size:13.5px;font-weight:600;font-family:inherit;transition:.18s;
+  }
+  .tab:hover{border-color:#a5b4fc;color:#4338ca;transform:translateY(-1px)}
+  .tab.active{
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-color:transparent;
+    box-shadow:0 6px 16px rgba(79,70,229,.32);
+  }
+
+  main{max-width:880px;margin:0 auto;padding:14px 16px 70px}
+
+  /* ---------- Теория ---------- */
+  .theory{
+    background:#fff;border-radius:16px;padding:18px 20px;margin-bottom:16px;
+    box-shadow:0 2px 10px rgba(30,41,59,.06);border:1px solid #e6eaf3;
+  }
+  .theory h3{margin:0 0 10px;font-size:17px;color:#4338ca}
+  .theory p{margin:8px 0;font-size:14.5px}
+  .theory ul{margin:8px 0;padding-left:22px;font-size:14.5px}
+  .theory li{margin:4px 0}
+  .formula{
+    background:linear-gradient(135deg,#eef2ff,#f5f3ff);border-left:4px solid #6366f1;
+    padding:10px 14px;border-radius:10px;margin:12px 0;font-size:15px;font-weight:600;
+    color:#3730a3;overflow-x:auto;
+  }
+  .ex{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px;padding:10px 14px;font-size:14px;margin-top:10px;color:#334155}
+
+  /* ---------- Карточка задания ---------- */
+  .card{
+    background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(30,41,59,.06);
+    border:1px solid #e6eaf3;
+  }
+  .task{font-size:17px;margin-bottom:6px}
+  .task p{margin:6px 0}
+  .muted{color:#64748b;font-size:13.5px}
+  .big{font-size:22px;color:#4338ca}
+  code{background:#eef2ff;color:#4338ca;padding:1px 6px;border-radius:6px;font-size:14px;font-family:ui-monospace,Consolas,monospace}
+  sup{font-size:.72em}
+
+  .inputs{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin:16px 0 14px}
+  .field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:#64748b}
+  .field span{display:flex;align-items:center;gap:4px}
+
+  .ans{
+    border:2px solid #d5dbea;border-radius:10px;padding:9px 12px;font-size:16px;font-family:inherit;
+    min-width:88px;outline:none;transition:.15s;background:#fff;color:#1e293b;
+  }
+  .ans.wide{min-width:230px}
+  .ans:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+  .ans.ok{border-color:#16a34a;background:#f0fdf4;box-shadow:0 0 0 3px rgba(22,163,74,.14)}
+  .ans.bad{border-color:#dc2626;background:#fef2f2;box-shadow:0 0 0 3px rgba(220,38,38,.13)}
+
+  /* дробный ввод */
+  .frac-input{display:inline-flex;flex-direction:column;align-items:center}
+  .frac-input input{
+    width:104px;text-align:center;border:2px solid #d5dbea;padding:8px 6px;font-size:16px;
+    font-family:inherit;outline:none;background:#fff;color:#1e293b;
+  }
+  .frac-input input:first-child{border-radius:10px 10px 0 0;border-bottom:none}
+  .frac-input input:last-child{border-radius:0 0 10px 10px;border-top:none}
+  .frac-input .frac-line{width:104px;height:2px;background:#94a3b8}
+  .frac-input input:focus{background:#eef2ff}
+
+  /* ---------- Кнопки ---------- */
+  .actions{display:flex;gap:9px;flex-wrap:wrap}
+  .btn{
+    border:1px solid #d5dbea;background:#fff;color:#334155;padding:10px 17px;border-radius:11px;
+    cursor:pointer;font-size:14.5px;font-weight:600;font-family:inherit;transition:.15s;
+  }
+  .btn:hover{border-color:#a5b4fc;color:#4338ca;transform:translateY(-1px)}
+  .btn.primary{
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-color:transparent;
+    box-shadow:0 5px 14px rgba(79,70,229,.3);
+  }
+  .btn.primary:hover{color:#fff;box-shadow:0 7px 18px rgba(79,70,229,.4)}
+  .btn.ghost{background:#f8fafc}
+
+  /* ---------- Обратная связь и решение ---------- */
+  .feedback{margin-top:14px;font-size:15px;border-radius:12px;display:none}
+  .feedback.show{display:block;padding:12px 15px}
+  .feedback.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}
+  .feedback.bad{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
+  .feedback.warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+
+  .solution{
+    margin-top:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;
+    padding:0;font-size:14.5px;color:#334155;display:none;
+  }
+  .solution.show{display:block;padding:14px 16px}
+  .solution p{margin:6px 0}
+  .mono{font-family:ui-monospace,Consolas,monospace;font-size:13.5px;line-height:1.9;color:#334155}
+
+  /* ---------- Красивые дроби ---------- */
+  .frac{
+    display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;
+    margin:0 3px;font-weight:700;line-height:1.15;
+  }
+  .frac .num{border-bottom:2px solid currentColor;padding:0 7px 1px}
+  .frac .den{padding:1px 7px 0}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Тренажёр: НОД, НОК и дроби</h1>
+  <p>Простые множители · НОД и НОК · сокращение · общий знаменатель · действия с дробями</p>
+  <div class="stats">
+    <span class="stat">✅ Верно: <b id="stat-ok">0</b></span>
+    <span class="stat">📊 Попыток: <b id="stat-total">0</b></span>
+    <span class="stat">🔥 Серия: <b id="stat-streak">0</b></span>
+  </div>
+</header>
+
+<nav>
+  <button class="tab active" data-key="factor">1. Простые множители</button>
+  <button class="tab" data-key="gcd">2. НОД</button>
+  <button class="tab" data-key="lcm">3. НОК</button>
+  <button class="tab" data-key="reduce">4. Сокращение дробей</button>
+  <button class="tab" data-key="cd">5. Общий знаменатель</button>
+  <button class="tab" data-key="addsub">6. Сложение и вычитание</button>
+  <button class="tab" data-key="muldiv">7. Умножение и деление</button>
+</nav>
+
+<main>
+
+<!-- ================= 1. ПРОСТЫЕ МНОЖИТЕЛИ ================= -->
+<section class="panel" id="panel-factor">
+  <div class="theory">
+    <h3>Разложение на простые множители</h3>
+    <p><b>Простое число</b> делится только на 1 и на само себя: 2, 3, 5, 7, 11, 13, 17, 19, 23…</p>
+    <p><b>Составное число</b> можно разложить на простые множители, и это разложение единственно.</p>
+    <ul>
+      <li>Берём самое маленькое простое число, которое делит наше число без остатка.</li>
+      <li>Делим, потом снова ищем делитель — и так, пока не получим 1.</li>
+      <li>Одинаковые множители записываем степенью.</li>
+    </ul>
+    <div class="formula">N = p₁<sup>a₁</sup> · p₂<sup>a₂</sup> · … · p<sub>k</sub><sup>a<sub>k</sub></sup></div>
+    <div class="ex"><b>Пример.</b> 360 = 2 · 180 = 2 · 2 · 90 = 2 · 2 · 2 · 45 = 2³ · 3 · 15 = 2³ · 3² · 5</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 2. НОД ================= -->
+<section class="panel" id="panel-gcd" hidden>
+  <div class="theory">
+    <h3>НОД — наибольший общий делитель</h3>
+    <p>Это самое большое число, на которое <b>каждое</b> из данных чисел делится без остатка.</p>
+    <ul>
+      <li>Раскладываем все числа на простые множители.</li>
+      <li>Берём только <b>общие</b> простые множители.</li>
+      <li>Каждый — в <b>наименьшей</b> степени, которая встретилась.</li>
+    </ul>
+    <div class="formula">НОД(a, b) = произведение общих множителей в наименьших степенях</div>
+    <div class="ex"><b>Пример.</b> 36 = 2² · 3², 48 = 2⁴ · 3 → НОД = 2² · 3 = 12</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 3. НОК ================= -->
+<section class="panel" id="panel-lcm" hidden>
+  <div class="theory">
+    <h3>НОК — наименьшее общее кратное</h3>
+    <p>Это самое маленькое число, которое делится на <b>каждое</b> из данных чисел.</p>
+    <ul>
+      <li>Раскладываем числа на простые множители.</li>
+      <li>Берём <b>все</b> встречающиеся простые множители.</li>
+      <li>Каждый — в <b>наибольшей</b> степени.</li>
+    </ul>
+    <div class="formula">НОК(a, b) = произведение всех множителей в наибольших степенях</div>
+    <div class="formula">НОД(a, b) · НОК(a, b) = a · b</div>
+    <div class="ex"><b>Пример.</b> 12 = 2² · 3, 18 = 2 · 3² → НОК = 2² · 3² = 36</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 4. СОКРАЩЕНИЕ ================= -->
+<section class="panel" id="panel-reduce" hidden>
+  <div class="theory">
+    <h3>Сокращение дробей через НОД</h3>
+    <p><b>Основное свойство дроби:</b> если числитель и знаменатель умножить или разделить на одно и то же число (не 0), значение дроби не изменится.</p>
+    <div class="formula">a / b = (a : c) / (b : c)</div>
+    <ul>
+      <li>Находим НОД числителя и знаменателя.</li>
+      <li>Делим оба на этот НОД.</li>
+      <li>Если НОД = 1 — дробь уже несократимая.</li>
+    </ul>
+    <div class="ex"><b>Пример.</b> 24/36: НОД(24, 36) = 12 → 24:12 = 2, 36:12 = 3 → <b>2/3</b></div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 5. ОБЩИЙ ЗНАМЕНАТЕЛЬ ================= -->
+<section class="panel" id="panel-cd" hidden>
+  <div class="theory">
+    <h3>Приведение к общему знаменателю</h3>
+    <p><b>Наименьший общий знаменатель</b> — это НОК знаменателей.</p>
+    <div class="formula">доп. множитель = НОК : знаменатель дроби</div>
+    <ul>
+      <li>Находим НОК всех знаменателей.</li>
+      <li>Для каждой дроби считаем дополнительный множитель.</li>
+      <li>Умножаем на него и числитель, и знаменатель.</li>
+    </ul>
+    <div class="ex"><b>Пример.</b> 1/6 и 1/8: НОК(6, 8) = 24 → 1/6 = 4/24, 1/8 = 3/24</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 6. СЛОЖЕНИЕ И ВЫЧИТАНИЕ ================= -->
+<section class="panel" id="panel-addsub" hidden>
+  <div class="theory">
+    <h3>Сложение и вычитание дробей</h3>
+    <p>Складывать и вычитать можно только дроби с <b>одинаковыми знаменателями</b>.</p>
+    <div class="formula">a/b ± c/d = (a·d ± c·b) / (b·d)</div>
+    <ul>
+      <li>Приводим дроби к общему знаменателю (лучше — к НОК).</li>
+      <li>Складываем или вычитаем только числители, знаменатель оставляем.</li>
+      <li>Ответ сокращаем. Неправильная дробь — тоже нормальный ответ.</li>
+    </ul>
+    <div class="ex"><b>Пример.</b> 5/6 + 3/8 = 20/24 + 9/24 = 29/24 = 1&nbsp;5/24</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+<!-- ================= 7. УМНОЖЕНИЕ И ДЕЛЕНИЕ ================= -->
+<section class="panel" id="panel-muldiv" hidden>
+  <div class="theory">
+    <h3>Умножение и деление дробей</h3>
+    <p>Общий знаменатель здесь <b>не нужен</b>!</p>
+    <div class="formula">a/b · c/d = (a · c) / (b · d)</div>
+    <div class="formula">a/b : c/d = a/b · d/c</div>
+    <ul>
+      <li>Умножение: числитель × числитель, знаменатель × знаменатель.</li>
+      <li>Деление: умножаем на <b>обратную</b> дробь (переворачиваем делитель).</li>
+      <li>Перед умножением можно сокращать «крест-накрест» — так числа меньше.</li>
+    </ul>
+    <div class="ex"><b>Пример.</b> 3/8 : 1/4 = 3/8 · 4/1 = 12/8 = 3/2 = 1,5</div>
+  </div>
+  <div class="card">
+    <div class="task" data-role="task"></div>
+    <div class="inputs" data-role="inputs"></div>
+    <div class="actions">
+      <button class="btn primary" data-act="check">Проверить</button>
+      <button class="btn" data-act="hint">Подсказка</button>
+      <button class="btn" data-act="solution">Решение</button>
+      <button class="btn ghost" data-act="new">Новое задание →</button>
+    </div>
+    <div class="feedback" data-role="feedback"></div>
+    <div class="solution" data-role="solution"></div>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ==================================================================
+   УТИЛИТЫ
+   ================================================================== */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+const rnd  = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+function shuffle(a){
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function gcd(a, b){ a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+function lcm(a, b){ return a / gcd(a, b) * b; }
+const gcdAll = arr => arr.reduce((x, y) => gcd(x, y));
+const lcmAll = arr => arr.reduce((x, y) => lcm(x, y));
+
+function isPrime(n){
+  if (n < 2) return false;
+  if (n % 2 === 0) return n === 2;
+  for (let i = 3; i * i <= n; i += 2) if (n % i === 0) return false;
+  return true;
+}
+function factorize(n){
+  const f = {};
+  let d = 2;
+  while (d * d <= n){
+    while (n % d === 0){ f[d] = (f[d] || 0) + 1; n /= d; }
+    d++;
+  }
+  if (n > 1) f[n] = (f[n] || 0) + 1;
+  return f;
+}
+function factorPowHTML(n){
+  const f = factorize(n);
+  return Object.keys(f).map(Number).sort((a, b) => a - b)
+    .map(p => f[p] > 1 ? `${p}<sup>${f[p]}</sup>` : `${p}`).join(' · ');
+}
+function frac(n, d){
+  return `<span class="frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+}
+function toInt(s){
+  const t = String(s).replace(/\s+/g, '').replace(',', '.');
+  if (!/^-?\d+$/.test(t)) return null;
+  return parseInt(t, 10);
+}
+function coprimeInts(count, min = 2, max = 12){
+  for (let t = 0; t < 300; t++){
+    const arr = Array.from({ length: count }, () => rnd(min, max));
+    if (new Set(arr).size !== count) continue;
+    if (gcdAll(arr) === 1) return arr;
+  }
+  return count === 2 ? [2, 3] : [2, 3, 5];
+}
+function parseFactorization(str){
+  let s = String(str).toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/[·×∙*]/g, '*')
+    .replace(/²/g, '^2').replace(/³/g, '^3').replace(/⁴/g, '^4');
+  if (!s) return null;
+  if (s.startsWith('*') || s.endsWith('*')) return null;
+  const parts = s.split('*');
+  const primes = [];
+  for (const part of parts){
+    const m = part.match(/^(\d+)\^(\d+)$/);
+    if (m){
+      const p = +m[1], e = +m[2];
+      if (p < 2 || e < 1 || e > 20) return null;
+      for (let i = 0; i < e; i++) primes.push(p);
+      continue;
+    }
+    if (/^\d+$/.test(part)){ primes.push(+part); continue; }
+    return null;
+  }
+  return primes.length ? primes : null;
+}
+
+/* ==================================================================
+   СТАТИСТИКА
+   ================================================================== */
+const stats = { ok: 0, total: 0, streak: 0 };
+function updateStats(){
+  $('#stat-ok').textContent     = stats.ok;
+  $('#stat-total').textContent  = stats.total;
+  $('#stat-streak').textContent = stats.streak;
+}
+
+/* ==================================================================
+   ДВИЖОК ТРЕНАЖЁРА
+   ================================================================== */
+const trainers = {};
+
+function initTrainer(key, cfg){
+  const panel    = document.getElementById('panel-' + key);
+  const taskEl   = panel.querySelector('[data-role="task"]');
+  const inputsEl = panel.querySelector('[data-role="inputs"]');
+  const fbEl     = panel.querySelector('[data-role="feedback"]');
+  const solEl    = panel.querySelector('[data-role="solution"]');
+
+  const st = { cfg, panel, taskEl, inputsEl, fbEl, solEl, task: null, answered: false };
+  trainers[key] = st;
+
+  st.newTask = function(){
+    st.task = cfg.gen();
+    st.answered = false;
+    taskEl.innerHTML   = cfg.taskHTML(st.task);
+    inputsEl.innerHTML = cfg.inputsHTML(st.task);
+    fbEl.className = 'feedback';
+    fbEl.innerHTML = '';
+    solEl.className = 'solution';
+    solEl.innerHTML = '';
+
+    $$('.ans', inputsEl).forEach(inp => {
+      inp.addEventListener('input', () => inp.classList.remove('ok', 'bad'));
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter'){ e.preventDefault(); doCheck(key); }
+      });
+    });
+    const first = $('.ans', inputsEl);
+    if (first && !panel.hidden) first.focus();
+  };
+
+  panel.querySelector('[data-act="check"]').onclick    = () => doCheck(key);
+  panel.querySelector('[data-act="solution"]').onclick = () => showSolution(key);
+  panel.querySelector('[data-act="new"]').onclick      = () => st.newTask();
+  panel.querySelector('[data-act="hint"]').onclick     = () => showFeedback(st, 'warn', '💡 ' + cfg.hint);
+
+  st.newTask();
+}
+
+function showFeedback(st, status, html){
+  st.fbEl.className = 'feedback show ' + status;
+  st.fbEl.innerHTML = html;
+}
+
+function doCheck(key){
+  const st = trainers[key];
+  if (!st) return;
+
+  const vals = {};
+  $$('.ans', st.panel).forEach(i => vals[i.dataset.name] = i.value.trim());
+
+  for (const k in vals){
+    if (vals[k] === ''){ showFeedback(st, 'warn', 'Заполните все поля 🙂'); return; }
+  }
+
+  const res = st.cfg.check(st.task, vals);
+  $$('.ans', st.panel).forEach(i => i.classList.remove('ok', 'bad'));
+
+  if (res.status === 'ok' || res.status === 'warn'){
+    $$('.ans', st.panel).forEach(i => i.classList.add('ok'));
+    if (!st.answered){
+      st.answered = true;
+      stats.total++;
+      if (res.status === 'ok'){ stats.ok++; stats.streak++; }
+      else { stats.streak = 0; }
+      updateStats();
+    }
+  } else {
+    $$('.ans', st.panel).forEach(i => i.classList.add('bad'));
+    if (!st.answered){
+      st.answered = true;
+      stats.total++;
+      stats.streak = 0;
+      updateStats();
+    }
+  }
+  showFeedback(st, res.status, res.msg);
+}
+
+function showSolution(key){
+  const st = trainers[key];
+  if (!st) return;
+  st.solEl.innerHTML = '<b>Решение:</b>' + st.cfg.solution(st.task);
+  st.solEl.classList.add('show');
+}
+
+/* ==================================================================
+   ГЕНЕРАТОРЫ ЗАДАНИЙ
+   ================================================================== */
+
+/* --- 1. Разложение на простые множители --- */
+function genFactor(){
+  for (let t = 0; t < 400; t++){
+    const primes = shuffle([2, 3, 5, 7, 11, 13]).slice(0, rnd(2, 4));
+    let n = 1;
+    for (const p of primes){
+      const maxE = p === 2 ? 3 : (p === 3 ? 2 : 2);
+      n *= p ** rnd(1, maxE);
+    }
+    if (n >= 12 && n <= 1000) return { n };
+  }
+  return { n: 360 };
+}
+function checkFactor(t, a){
+  const pr = parseFactorization(a.val);
+  if (!pr) return { status: 'bad', msg: 'Не могу разобрать запись. Пишите так: <code>2^3·3·5</code> или <code>2*2*2*3*5</code>.' };
+  if (pr.length === 1 && pr[0] === t.n)
+    return { status: 'bad', msg: 'Это же исходное число! Его нужно разложить на простые множители.' };
+
+  const prod = pr.reduce((x, y) => x * y, 1);
+  if (prod !== t.n)
+    return { status: 'bad', msg: `Произведение твоих множителей = ${prod}, а нужно ${t.n}. Проверь вычисления.` };
+
+  const notPrime = [...new Set(pr.filter(p => !isPrime(p)))];
+  if (notPrime.length)
+    return { status: 'bad', msg: `Числа ${notPrime.join(', ')} — не простые. Разложи их дальше.` };
+
+  if (pr.length < 2)
+    return { status: 'bad', msg: 'Нужно хотя бы два простых множителя.' };
+
+  return { status: 'ok', msg: `Верно! ${t.n} = ${factorPowHTML(t.n)}` };
+}
+function solFactor(t){
+  const f = factorize(t.n);
+  let cur = t.n;
+  const steps = [];
+  Object.keys(f).map(Number).sort((a, b) => a - b).forEach(p => {
+    for (let i = 0; i < f[p]; i++){
+      steps.push(`${cur} : ${p} = ${cur / p}`);
+      cur /= p;
+    }
+  });
+  return `<p>Делим на простые числа, пока не получим 1:</p>
+    <p class="mono">${steps.join('<br>')}</p>
+    <p>Значит, <b>${t.n} = ${factorPowHTML(t.n)}</b></p>`;
+}
+
+/* --- 2. НОД --- */
+function genGcd(){
+  for (let t = 0; t < 300; t++){
+    const g = pick([2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 25, 27, 30, 36, 40, 45, 48]);
+    const three = Math.random() < 0.3;
+    const mult = coprimeInts(three ? 3 : 2, 2, three ? 9 : 13);
+    const nums = mult.map(m => g * m);
+    if (nums.some(n => n > 900)) continue;
+    if (new Set(nums).size !== nums.length) continue;
+    if (gcdAll(nums) !== g) continue;
+    return { nums, g };
+  }
+  return { nums: [42, 63], g: 21 };
+}
+function checkGcd(t, a){
+  const v = toInt(a.val);
+  if (v === null) return { status: 'bad', msg: 'Ответ должен быть целым числом.' };
+  if (v === t.g) return { status: 'ok', msg: `Верно! НОД = ${t.g}` };
+  if (t.nums.every(n => n % v === 0) && v < t.g)
+    return { status: 'warn', msg: `${v} — действительно общий делитель, но не наибольший. Есть число больше.` };
+  return { status: 'bad', msg: 'Неверно. Разложи числа на простые множители и возьми общие в наименьших степенях.' };
+}
+function commonPrimeStr(nums){
+  const fs = nums.map(n => factorize(n));
+  const primes = Object.keys(fs[0]).map(Number).filter(p => fs.every(o => o[p]));
+  const parts = primes.map(p => {
+    const e = Math.min(...fs.map(o => o[p]));
+    return e > 1 ? `${p}<sup>${e}</sup>` : `${p}`;
+  });
+  return { str: parts.join(' · ') || '1', val: primes.reduce((acc, p) => acc * p ** Math.min(...fs.map(o => o[p])), 1) };
+}
+function solGcd(t){
+  const lines = t.nums.map(n => `${n} = ${factorPowHTML(n)}`).join('<br>');
+  const c = commonPrimeStr(t.nums);
+  return `<p class="mono">${lines}</p>
+    <p>Общие множители в наименьших степенях: <b>${c.str} = ${c.val}</b></p>
+    <p>НОД(${t.nums.join(', ')}) = <b>${t.g}</b></p>`;
+}
+
+/* --- 3. НОК --- */
+function genLcm(){
+  for (let t = 0; t < 500; t++){
+    if (Math.random() < 0.25){
+      const nums = [rnd(4, 25), rnd(4, 25), rnd(4, 25)];
+      if (new Set(nums).size < 2) continue;
+      const L = lcmAll(nums);
+      if (L <= 500 && L > Math.max(...nums)) return { nums, L };
+    } else {
+      const a = rnd(6, 60), b = rnd(6, 60);
+      if (a === b) continue;
+      const L = lcm(a, b);
+      if (L <= 600 && L > Math.max(a, b)) return { nums: [a, b], L };
+    }
+  }
+  return { nums: [12, 18], L: 36 };
+}
+function checkLcm(t, a){
+  const v = toInt(a.val);
+  if (v === null) return { status: 'bad', msg: 'Ответ должен быть целым числом.' };
+  if (v === t.L) return { status: 'ok', msg: `Верно! НОК = ${t.L}` };
+  if (t.nums.every(n => v % n === 0) && v > t.L)
+    return { status: 'warn', msg: `${v} — общее кратное, но не наименьшее. Можно найти меньше.` };
+  return { status: 'bad', msg: 'Неверно. Разложи числа на множители и возьми все в наибольших степенях.' };
+}
+function solLcm(t){
+  const lines = t.nums.map(n => `${n} = ${factorPowHTML(n)}`).join('<br>');
+  const all = {};
+  t.nums.forEach(n => {
+    const f = factorize(n);
+    for (const p in f) all[p] = Math.max(all[p] || 0, f[p]);
+  });
+  const str = Object.keys(all).map(Number).sort((a, b) => a - b)
+    .map(p => all[p] > 1 ? `${p}<sup>${all[p]}</sup>` : `${p}`).join(' · ');
+  return `<p class="mono">${lines}</p>
+    <p>Берём все множители в наибольших степенях: <b>${str} = ${t.L}</b></p>
+    <p>НОК(${t.nums.join(', ')}) = <b>${t.L}</b></p>`;
+}
+
+/* --- 4. Сокращение дробей --- */
+function genReduce(){
+  let n0 = rnd(1, 9);
+  let d0 = rnd(n0 + 1, 14);
+  const g0 = gcd(n0, d0);
+  n0 /= g0; d0 /= g0;
+  const k = rnd(2, 14);
+  return { num: n0 * k, den: d0 * k, rn: n0, rd: d0 };
+}
+function checkReduce(t, a){
+  const n = toInt(a.num), d = toInt(a.den);
+  if (n === null || d === null) return { status: 'bad', msg: 'Числитель и знаменатель должны быть целыми числами.' };
+  if (d === 0) return { status: 'bad', msg: 'Знаменатель не может быть нулём.' };
+  if (n * t.den !== t.num * d) return { status: 'bad', msg: 'Неверно. Найди НОД числителя и знаменателя и раздели оба на него.' };
+  if (gcd(Math.abs(n), Math.abs(d)) !== 1)
+    return { status: 'warn', msg: `Значение верное, но дробь ещё сократимая. До конца: ${frac(t.rn, t.rd)}` };
+  return { status: 'ok', msg: `Верно! ${frac(t.num, t.den)} = ${frac(t.rn, t.rd)}` };
+}
+function solReduce(t){
+  const g = gcd(t.num, t.den);
+  return `<p>НОД(${t.num}, ${t.den}) = ${g}</p>
+    <p>${t.num} : ${g} = ${t.num / g}, &nbsp; ${t.den} : ${g} = ${t.den / g}</p>
+    <p>${frac(t.num, t.den)} = <b>${frac(t.num / g, t.den / g)}</b></p>`;
+}
+
+/* --- 5. Общий знаменатель --- */
+function genCd(){
+  for (let t = 0; t < 500; t++){
+    if (Math.random() < 0.2){
+      const ds = [rnd(4, 18), rnd(4, 18), rnd(4, 18)];
+      if (new Set(ds).size < 2) continue;
+      const L = lcmAll(ds);
+      if (L <= 420) return { ds, ns: ds.map(d => rnd(1, d - 1)), L };
+    } else {
+      const ds = [rnd(4, 16), rnd(4, 16)];
+      if (ds[0] === ds[1]) continue;
+      const L = lcmAll(ds);
+      if (L <= 200) return { ds, ns: ds.map(d => rnd(1, d - 1)), L };
+    }
+  }
+  return { ds: [6, 8], ns: [1, 1], L: 24 };
+}
+function checkCd(t, a){
+  const den = toInt(a.den);
+  if (den === null) return { status: 'bad', msg: 'Знаменатель должен быть целым числом.' };
+  if (den !== t.L)
+    return { status: 'bad', msg: `Общий знаменатель должен быть наименьшим: НОК(${t.ds.join(', ')}) = ${t.L}.` };
+
+  const wrong = [];
+  t.ns.forEach((n, i) => {
+    const v = toInt(a['n' + i]);
+    const exp = n * (t.L / t.ds[i]);
+    if (v !== exp) wrong.push(`для ${frac(n, t.ds[i])} должно получиться ${exp}`);
+  });
+  if (wrong.length) return { status: 'bad', msg: 'Почти! ' + wrong.join('; ') + '.' };
+
+  return {
+    status: 'ok',
+    msg: 'Верно! ' + t.ns.map((n, i) =>
+      `${frac(n, t.ds[i])} = ${frac(n * (t.L / t.ds[i]), t.L)}`).join(', ')
+  };
+}
+function solCd(t){
+  const lines = t.ns.map((n, i) => {
+    const k = t.L / t.ds[i];
+    return `<p>${frac(n, t.ds[i])}: доп. множитель ${t.L} : ${t.ds[i]} = ${k} → ${frac(n, t.ds[i])} = ${frac(n * k, t.L)}</p>`;
+  }).join('');
+  return `<p>НОК(${t.ds.join(', ')}) = <b>${t.L}</b></p>${lines}`;
+}
+
+/* --- 6. Сложение и вычитание --- */
+function genAddSub(){
+  for (let t = 0; t < 300; t++){
+    const op = Math.random() < 0.5 ? '+' : '−';
+    const b = rnd(2, 12), d = rnd(2, 12);
+    const a = rnd(1, b - 1), c = rnd(1, d - 1);
+    const num = op === '+' ? a * d + c * b : a * d - c * b;
+    const den = b * d;
+    if (num <= 0) continue;
+    const g = gcd(num, den);
+    return { a, b, c, d, op, rn: num / g, rd: den / g };
+  }
+  return { a: 1, b: 2, c: 1, d: 3, op: '+', rn: 5, rd: 6 };
+}
+function checkFracValue(t, a){
+  const n = toInt(a.num), d = toInt(a.den);
+  if (n === null || d === null) return { status: 'bad', msg: 'Числитель и знаменатель должны быть целыми числами.' };
+  if (d === 0) return { status: 'bad', msg: 'Знаменатель не может быть нулём.' };
+  if (n * t.rd !== t.rn * d) return { status: 'bad', msg: 'Неверно. Проверь общий знаменатель и числители. Нажми «Решение», если нужна помощь.' };
+  if (gcd(Math.abs(n), Math.abs(d)) !== 1)
+    return { status: 'warn', msg: `Значение верное, но дробь сократимая. Ответ: ${frac(t.rn, t.rd)}` };
+  return { status: 'ok', msg: 'Верно! 🎉' };
+}
+function solAddSub(t){
+  const L = lcm(t.b, t.d);
+  const k1 = L / t.b, k2 = L / t.d;
+  const n1 = t.a * k1, n2 = t.c * k2;
+  const res = t.op === '+' ? n1 + n2 : n1 - n2;
+  const needReduce = (res !== t.rn || L !== t.rd);
+  return `<p>НОК(${t.b}, ${t.d}) = ${L}</p>
+    <p>${frac(t.a, t.b)} = ${frac(n1, L)}, &nbsp;&nbsp; ${frac(t.c, t.d)} = ${frac(n2, L)}</p>
+    <p>${frac(n1, L)} ${t.op} ${frac(n2, L)} = ${frac(res, L)}${needReduce ? ' = <b>' + frac(t.rn, t.rd) + '</b>' : ''}</p>`;
+}
+
+/* --- 7. Умножение и деление --- */
+function genMulDiv(){
+  for (let t = 0; t < 300; t++){
+    const op = Math.random() < 0.5 ? '·' : ':';
+    const b = rnd(2, 9), d = rnd(2, 9);
+    const a = rnd(1, b - 1), c = rnd(1, d - 1);
+    let num, den;
+    if (op === '·'){ num = a * c; den = b * d; }
+    else { num = a * d; den = b * c; }
+    if (den === 0 || num === 0) continue;
+    const g = gcd(num, den);
+    return { a, b, c, d, op, rn: num / g, rd: den / g };
+  }
+  return { a: 2, b: 3, c: 3, d: 4, op: '·', rn: 1, rd: 2 };
+}
+function solMulDiv(t){
+  if (t.op === '·'){
+    const num = t.a * t.c, den = t.b * t.d;
+    const need = (num !== t.rn || den !== t.rd);
+    return `<p>${frac(t.a, t.b)} · ${frac(t.c, t.d)} = ${frac(`${t.a}·${t.c}`, `${t.b}·${t.d}`)} = ${frac(num, den)}${need ? ' = <b>' + frac(t.rn, t.rd) + '</b>' : ''}</p>`;
+  }
+  const num = t.a * t.d, den = t.b * t.c;
+  const need = (num !== t.rn || den !== t.rd);
+  return `<p>${frac(t.a, t.b)} : ${frac(t.c, t.d)} = ${frac(t.a, t.b)} · ${frac(t.d, t.c)} = ${frac(`${t.a}·${t.d}`, `${t.b}·${t.c}`)} = ${frac(num, den)}${need ? ' = <b>' + frac(t.rn, t.rd) + '</b>' : ''}</p>`;
+}
+
+/* ==================================================================
+   РЕГИСТРАЦИЯ ТРЕНАЖЁРОВ
+   ================================================================== */
+initTrainer('factor', {
+  gen: genFactor,
+  taskHTML: t => `<p>Разложите число <b class="big">${t.n}</b> на простые множители.</p>
+    <p class="muted">Формат: <code>2^3·3·5</code> или <code>2*2*2*3*5</code>. Множители должны быть простыми.</p>`,
+  inputsHTML: () => `<input class="ans wide" data-name="val" placeholder="например: 2^3*3*5" autocomplete="off" spellcheck="false">`,
+  check: checkFactor,
+  solution: solFactor,
+  hint: 'Начинай с самого маленького простого делителя: 2, потом 3, потом 5, 7… Дели, пока не получишь 1.'
+});
+
+initTrainer('gcd', {
+  gen: genGcd,
+  taskHTML: t => `<p>Найдите <b>НОД</b> чисел: <b class="big">${t.nums.join(', ')}</b></p>
+    <p class="muted">НОД — наибольшее число, на которое делится каждое из них.</p>`,
+  inputsHTML: () => `<label class="field"><span>НОД =</span><input class="ans" data-name="val" autocomplete="off"></label>`,
+  check: checkGcd,
+  solution: solGcd,
+  hint: 'Разложи числа на простые множители и возьми общие множители в наименьших степенях.'
+});
+
+initTrainer('lcm', {
+  gen: genLcm,
+  taskHTML: t => `<p>Найдите <b>НОК</b> чисел: <b class="big">${t.nums.join(', ')}</b></p>
+    <p class="muted">НОК — наименьшее число, которое делится на каждое из них.</p>`,
+  inputsHTML: () => `<label class="field"><span>НОК =</span><input class="ans" data-name="val" autocomplete="off"></label>`,
+  check: checkLcm,
+  solution: solLcm,
+  hint: 'Возьми все простые множители, которые встречаются, каждый — в наибольшей степени.'
+});
+
+initTrainer('reduce', {
+  gen: genReduce,
+  taskHTML: t => `<p>Сократите дробь: <b class="big">${frac(t.num, t.den)}</b></p>
+    <p class="muted">Ответ запишите несократимой дробью.</p>`,
+  inputsHTML: () => `
+    <div class="frac-input">
+      <input class="ans" data-name="num" placeholder="числ." autocomplete="off">
+      <div class="frac-line"></div>
+      <input class="ans" data-name="den" placeholder="знам." autocomplete="off">
+    </div>`,
+  check: checkReduce,
+  solution: solReduce,
+  hint: 'Найди НОД числителя и знаменателя и раздели оба числа на него.'
+});
+
+initTrainer('cd', {
+  gen: genCd,
+  taskHTML: t => `<p>Приведите дроби к <b>наименьшему общему знаменателю</b>:</p>
+    <p class="big">${t.ns.map((n, i) => frac(n, t.ds[i])).join(' и ')}</p>`,
+  inputsHTML: t => {
+    let h = '';
+    t.ns.forEach((n, i) => {
+      h += `<label class="field"><span>${frac(n, t.ds[i])} → числитель</span>
+              <input class="ans" data-name="n${i}" autocomplete="off"></label>`;
+    });
+    h += `<label class="field"><span>Общий знаменатель</span>
+            <input class="ans" data-name="den" autocomplete="off"></label>`;
+    return h;
+  },
+  check: checkCd,
+  solution: solCd,
+  hint: 'Наименьший общий знаменатель = НОК знаменателей. Доп. множитель = НОК : знаменатель дроби.'
+});
+
+initTrainer('addsub', {
+  gen: genAddSub,
+  taskHTML: t => `<p>Вычислите:</p>
+    <p class="big">${frac(t.a, t.b)} ${t.op} ${frac(t.c, t.d)}</p>
+    <p class="muted">Ответ — несократимая дробь (можно неправильную, например 29/24).</p>`,
+  inputsHTML: () => `
+    <div class="frac-input">
+      <input class="ans" data-name="num" placeholder="числ." autocomplete="off">
+      <div class="frac-line"></div>
+      <input class="ans" data-name="den" placeholder="знам." autocomplete="off">
+    </div>`,
+  check: checkFracValue,
+  solution: solAddSub,
+  hint: 'Приведи дроби к общему знаменателю, потом складывай или вычитай только числители.'
+});
+
+initTrainer('muldiv', {
+  gen: genMulDiv,
+  taskHTML: t => `<p>Вычислите:</p>
+    <p class="big">${frac(t.a, t.b)} ${t.op} ${frac(t.c, t.d)}</p>
+    <p class="muted">Ответ — несократимая дробь.</p>`,
+  inputsHTML: () => `
+    <div class="frac-input">
+      <input class="ans" data-name="num" placeholder="числ." autocomplete="off">
+      <div class="frac-line"></div>
+      <input class="ans" data-name="den" placeholder="знам." autocomplete="off">
+    </div>`,
+  check: checkFracValue,
+  solution: solMulDiv,
+  hint: 'Умножение: числитель × числитель, знаменатель × знаменатель. Деление: умножь на обратную дробь.'
+});
+
+/* ==================================================================
+   ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+   ================================================================== */
+$$('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    $$('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    $$('.panel').forEach(p => p.hidden = true);
+    const panel = document.getElementById('panel-' + tab.dataset.key);
+    panel.hidden = false;
+    const first = $('.ans', panel);
+    if (first) first.focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+updateStats();
+</script>
+</body>
+</html>
