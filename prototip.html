@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Проценты. Прототип 10</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  background: #f5f2ec;
+  color: #2c2c2c;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+.top-bar {
+  background: #1AA6C4;
+  padding: 18px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.brand {
+  color: #fff;
+  font-family: -apple-system, sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+}
+
+.stats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 6px 14px;
+  border-radius: 20px;
+  color: #fff;
+  font-family: -apple-system, sans-serif;
+  font-size: 13px;
+}
+
+.stat .num {
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.reset-btn {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: -apple-system, sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.reset-btn:hover { opacity: 1; }
+
+.container {
+  max-width: 880px;
+  margin: 30px auto;
+  background: #fffdf9;
+  border-radius: 12px;
+  padding: 0 50px 40px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+}
+
+.microtopic-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 30px 0 22px;
+  border-bottom: 1px solid #ebe6dc;
+  margin-bottom: 30px;
+  align-items: center;
+}
+
+.microtopic-tab {
+  padding: 10px 18px;
+  border: 1px solid #e0d9cc;
+  border-radius: 24px;
+  background: #fff;
+  font-family: -apple-system, sans-serif;
+  font-size: 14px;
+  color: #5a5a5a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.microtopic-tab:hover { border-color: #1AA6C4; color: #1a1a1a; }
+.microtopic-tab.active { background: #1AA6C4; border-color: #1AA6C4; color: #fff; }
+
+.notes-tab {
+  margin-left: auto;
+  padding: 10px 18px;
+  border: 1px dashed #c9b896;
+  border-radius: 24px;
+  background: transparent;
+  font-family: -apple-system, sans-serif;
+  font-size: 14px;
+  color: #8a7a5a;
+  cursor: pointer;
+}
+
+.notes-tab:hover { background: #f5efe3; }
+.notes-tab.active { background: #8a7a5a; border-color: #8a7a5a; border-style: solid; color: #fff; }
+
+.cover { padding: 10px 0 30px; text-align: center; }
+.cover-title { font-size: 34px; font-weight: normal; color: #1a1a1a; margin-bottom: 6px; }
+.cover-subject { font-family: -apple-system, sans-serif; font-size: 14px; color: #a89a7a; margin-bottom: 30px; }
+
+.cover-image {
+  width: 100%;
+  height: 260px;
+  background: #f0f9fc;
+  border: 1px dashed #b8dde6;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7ab8c8;
+  font-family: -apple-system, sans-serif;
+  font-size: 14px;
+  margin-bottom: 26px;
+}
+
+.cover-intro {
+  font-size: 17px;
+  color: #4a4a4a;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px 24px;
+  background: #f9f6f0;
+  border-left: 3px solid #1AA6C4;
+  border-radius: 4px;
+  text-align: left;
+}
+
+.layer-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border-bottom: 1px solid #ebe6dc;
+  margin-bottom: 28px;
+}
+
+.layer-tab {
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  font-family: -apple-system, sans-serif;
+  font-size: 15px;
+  color: #7a7a7a;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s ease;
+}
+
+.layer-tab:hover { color: #1a1a1a; }
+.layer-tab.active { color: #1AA6C4; border-bottom-color: #1AA6C4; font-weight: 500; }
+
+.microtopic-title {
+  font-size: 26px;
+  font-weight: normal;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+}
+
+.challenge {
+  padding: 26px 30px;
+  background: #fff8e8;
+  border-left: 4px solid #F5B301;
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+
+.challenge-label {
+  font-family: -apple-system, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #c99a1a;
+  margin-bottom: 10px;
+}
+
+.challenge-question {
+  font-size: 19px;
+  color: #1a1a1a;
+  margin-bottom: 14px;
+}
+
+.challenge-note {
+  font-size: 15px;
+  color: #7a6a4a;
+  font-style: italic;
+  margin-bottom: 18px;
+}
+
+.theory {
+  padding: 24px 28px;
+  background: #f9f6f0;
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+
+.theory-label {
+  font-family: -apple-system, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #1AA6C4;
+  margin-bottom: 14px;
+}
+
+.theory p {
+  font-size: 16px;
+  color: #2c2c2c;
+  margin-bottom: 10px;
+}
+
+.theory ul {
+  list-style: none;
+  padding: 0;
+}
+
+.theory li {
+  font-size: 16px;
+  padding-left: 20px;
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.theory li:before {
+  content: "●";
+  color: #1AA6C4;
+  position: absolute;
+  left: 0;
+  font-size: 10px;
+  top: 6px;
+}
+
+.formula {
+  padding: 14px 20px;
+  background: #f0f9fc;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 15px;
+  color: #1a5a6a;
+  margin: 14px 0;
+}
+
+.example {
+  padding: 24px 28px;
+  background: #f5f8f0;
+  border-left: 4px solid #7a9a6a;
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+
+.example-label {
+  font-family: -apple-system, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #5a7a4a;
+  margin-bottom: 12px;
+}
+
+.example p {
+  font-size: 16px;
+  color: #2c2c2c;
+  margin-bottom: 8px;
+}
+
+.example-chain {
+  font-family: 'Courier New', monospace;
+  font-size: 15px;
+  color: #3a5a2a;
+  padding: 10px 0;
+  line-height: 1.9;
+}
+
+.example-counter {
+  font-family: -apple-system, sans-serif;
+  font-size: 12px;
+  color: #7a8a6a;
+  margin-top: 10px;
+}
+
+.task-container {
+  margin-bottom: 24px;
+}
+
+.task-question {
+  font-size: 19px;
+  color: #1a1a1a;
+  margin-bottom: 18px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.option {
+  padding: 14px 20px;
+  border: 1px solid #e0d9cc;
+  border-radius: 8px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #2c2c2c;
+}
+
+.option:hover { border-color: #1AA6C4; background: #f5fbfd; }
+.option.selected { border-color: #1AA6C4; background: #e6f6fa; }
+.option.correct { border-color: #7a9a6a; background: #eef4e9; }
+.option.incorrect { border-color: #b87a7a; background: #f7ecec; }
+.option.disabled { cursor: default; }
+
+.input-answer {
+  width: 100%;
+  padding: 14px 20px;
+  border: 1px solid #e0d9cc;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 16px;
+  background: #fff;
+  color: #2c2c2c;
+  margin-bottom: 16px;
+}
+
+.input-answer:focus { outline: none; border-color: #1AA6C4; }
+
+.input-hint {
+  font-family: -apple-system, sans-serif;
+  font-size: 13px;
+  color: #a89a7a;
+  margin-bottom: 12px;
+}
+
+.match-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.match-left {
+  flex: 1;
+  padding: 14px 18px;
+  background: #f9f6f0;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.match-right { flex: 1; }
+
+.match-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e0d9cc;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  background: #fff;
+  color: #2c2c2c;
+  cursor: pointer;
+}
+
+.match-select:focus { outline: none; border-color: #1AA6C4; }
+
+.open-answer {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid #e0d9cc;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 16px;
+  background: #fff;
+  color: #2c2c2c;
+  margin-bottom: 16px;
+  resize: vertical;
+  min-height: 90px;
+}
+
+.open-answer:focus { outline: none; border-color: #1AA6C4; }
+
+.feedback {
+  margin-top: 14px;
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  display: none;
+  font-family: -apple-system, sans-serif;
+}
+
+.feedback.show { display: block; }
+.feedback.correct { background: #eef4e9; color: #4a6a3a; border-left: 3px solid #7a9a6a; }
+.feedback.incorrect { background: #f7ecec; color: #7a4a4a; border-left: 3px solid #b87a7a; }
+.feedback.hint { background: #f5efe3; color: #6a5a3a; border-left: 3px solid #c9b896; }
+
+.solution-box {
+  margin-top: 14px;
+  padding: 18px 22px;
+  background: #eef4e9;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #3a5a2a;
+  border-left: 3px solid #7a9a6a;
+  display: none;
+  font-family: -apple-system, sans-serif;
+  white-space: pre-line;
+}
+
+.solution-box.show { display: block; }
+
+.solution-label {
+  font-family: -apple-system, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #5a7a4a;
+  margin-bottom: 8px;
+}
+
+.buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  font-family: -apple-system, sans-serif;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.btn-primary { background: #1AA6C4; color: #fff; }
+.btn-primary:hover { background: #1590a8; }
+.btn-primary:disabled { background: #b8dde6; cursor: not-allowed; }
+
+.btn-secondary { background: transparent; color: #1AA6C4; border: 1px solid #1AA6C4; }
+.btn-secondary:hover { background: #f5fbfd; }
+
+.btn-warm { background: transparent; color: #8a7a5a; border: 1px solid #c9b896; }
+.btn-warm:hover { background: #f5efe3; }
+
+.pause {
+  padding: 24px 28px;
+  border-radius: 10px;
+  margin: 24px 0;
+  font-size: 16px;
+}
+
+.pause-learn { background: #f5efe3; border-left: 4px solid #c9b896; color: #6a5a3a; }
+.pause-life { background: #f0f7fa; border-left: 4px solid #1AA6C4; color: #2a6a7a; }
+.pause-reflect { background: #f4f0f8; border-left: 4px solid #8a7aa8; color: #5a4a6a; }
+
+.pause-label {
+  font-family: -apple-system, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  opacity: 0.75;
+}
+
+.pause-question {
+  font-size: 17px;
+  margin-bottom: 14px;
+  color: #1a1a1a;
+}
+
+.pause-answer {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  background: rgba(255, 255, 255, 0.7);
+  color: #2c2c2c;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.pause-answer:focus { outline: none; border-color: #1AA6C4; background: #fff; }
+
+.creative {
+  padding: 26px 30px;
+  background: #f4f0f8;
+  border-left: 4px solid #8a7aa8;
+  border-radius: 10px;
+  margin-top: 24px;
+}
+
+.creative-label {
+  font-family: -apple-system, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #6a4a8a;
+  margin-bottom: 10px;
+}
+
+.creative-text {
+  font-size: 16px;
+  color: #4a3a5a;
+  margin-bottom: 14px;
+}
+
+.creative-input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #2c2c2c;
+  resize: vertical;
+  min-height: 90px;
+}
+
+.creative-input:focus { outline: none; border-color: #8a7aa8; background: #fff; }
+
+.layer-complete {
+  text-align: center;
+  padding: 34px 24px;
+  background: #f9f6f0;
+  border-radius: 10px;
+  margin-top: 24px;
+}
+
+.layer-complete-title {
+  font-size: 22px;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+  font-weight: normal;
+}
+
+.layer-complete-text {
+  font-size: 15px;
+  color: #7a7a7a;
+  margin-bottom: 20px;
+}
+
+.notes-prompt { margin-bottom: 22px; }
+.notes-question { font-size: 16px; color: #2c2c2c; margin-bottom: 8px; }
+
+.notes-input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid #e0d9cc;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 16px;
+  background: #fff;
+  resize: vertical;
+  min-height: 70px;
+  color: #2c2c2c;
+}
+
+.notes-input:focus { outline: none; border-color: #1AA6C4; }
+
+.hidden { display: none; }
+
+@media (max-width: 640px) {
+  .top-bar { padding: 14px 20px; }
+  .container { margin: 16px auto; padding: 0 20px 24px; }
+  .cover-title { font-size: 26px; }
+  .cover-image { height: 180px; }
+  .microtopic-title { font-size: 22px; }
+  .microtopic-tab { font-size: 13px; padding: 8px 14px; }
+  .notes-tab { margin-left: 0; }
+  .layer-tab { padding: 10px 14px; font-size: 14px; }
+  .match-row { flex-direction: column; align-items: stretch; }
+}
+</style>
+</head>
+<body>
+
+<header class="top-bar">
+  <div class="brand">Северное Сияние</div>
+  <div class="stats">
+    <div class="stat">✅ Верно<span class="num" id="stat-correct">0</span></div>
+    <div class="stat">📊 Попыток<span class="num" id="stat-attempts">0</span></div>
+    <div class="stat">🔥 Серия<span class="num" id="stat-streak">0</span></div>
+  </div>
+  <button class="reset-btn" onclick="resetAll()">Начать заново</button>
+</header>
+
+<div class="container">
+  <div class="microtopic-tabs" id="microtopic-tabs"></div>
+
+  <div id="cover" class="cover">
+    <h1 class="cover-title">Проценты</h1>
+    <p class="cover-subject">Математика · 5 класс</p>
+    <div class="cover-image">здесь будет картинка</div>
+    <div class="cover-intro">
+      Проценты встречаются каждый день: скидки, вклады, рост цен, статистика. Здесь Вы пройдёте путь шаг за шагом — в своём темпе и на свою глубину.
+    </div>
+  </div>
+
+  <div id="microtopic-view" class="hidden">
+    <h2 class="microtopic-title" id="microtopic-title"></h2>
+    <div class="layer-tabs" id="layer-tabs"></div>
+    <div id="content"></div>
+  </div>
+
+  <div id="notes-screen" class="hidden">
+    <h2 class="microtopic-title">Заметки</h2>
+    <p style="font-size: 16px; color: #7a7a7a; margin-bottom: 26px; font-style: italic;">Здесь Вы пишете для себя. Не для нас.</p>
+    <div id="notes-content"></div>
+  </div>
+</div>
+
+<script>
+const topic = {
+  title: "Проценты",
+  microtopics: [
+    {
+      id: "m1",
+      title: "Что такое процент",
+      layers: {
+        base: {
+          challenge: {
+            question: "В магазине скидка 50%. Футболка стоила 800 рублей. Сколько она стоит теперь?",
+            note: "Попробуйте решить. Если не получится — ничего страшного, дальше разберём."
+          },
+          theory: {
+            paragraphs: [
+              "Процент — от латинского «за сотню». Это одна сотая часть числа.",
+              "Обозначается знаком %. Значит, 1% = 1/100.",
+              "Слово «процент» пришло из торговли: купцы считали прибыль на каждую сотню товара."
+            ],
+            list: [
+              "50% — это половина числа",
+              "25% — это четверть",
+              "20% — это пятая часть",
+              "10% — это десятая часть",
+              "1% — сотая часть"
+            ],
+            formula: "1% = 1/100 = 0,01"
+          },
+          examples: [
+            { label: "Пример 1", intro: "Найдём 50% от 800 рублей.", chain: ["50% = 50/100 = 1/2", "1/2 от 800 = 800 : 2 = 400"], result: "Ответ: 400 рублей." },
+            { label: "Пример 2", intro: "Найдём 25% от 200 рублей.", chain: ["25% = 25/100 = 1/4", "1/4 от 200 = 200 : 4 = 50"], result: "Ответ: 50 рублей." },
+            { label: "Пример 3", intro: "Найдём 10% от 350 рублей.", chain: ["10% = 10/100 = 1/10", "1/10 от 350 = 350 : 10 = 35"], result: "Ответ: 35 рублей." }
+          ],
+          tasks: [
+            { type: "choice", q: "Что такое один процент?", options: ["Одна десятая", "Одна сотая", "Одна тысячная", "Одна целая"], a: "Одна сотая", hint: "Процент — от латинского «за сотню».", solution: "Процент — это одна сотая часть. Значит, 1% = 1/100." },
+            { type: "input", q: "Запишите 50% в виде обыкновенной дроби.", a: "1/2", inputHint: "Например: 1/2", hint: "50% — это 50/100. Сократим на 50.", solution: "50% = 50/100. Сократим числитель и знаменатель на 50 — получим 1/2." },
+            { type: "choice", q: "Сколько процентов составляет всё число?", options: ["50%", "100%", "1000%", "10%"], a: "100%", hint: "Целое — это 100 сотых.", solution: "Всё число — это 100 сотых, то есть 100%." },
+            { type: "input", q: "Запишите 25% в виде обыкновенной дроби.", a: "1/4", inputHint: "Например: 1/4", hint: "25/100. Сократим на 25.", solution: "25% = 25/100. Сократим на 25 — получим 1/4." },
+            { type: "find-error", q: "Найдите ошибку: «25% — это 25/10».", options: ["Ошибки нет", "Должно быть 25/100", "Должно быть 1/25", "Должно быть 5/1"], a: "Должно быть 25/100", hint: "Процент — сотая часть, а не десятая.", solution: "Процент — сотая часть. 25% = 25/100 = 1/4. Не 25/10." },
+            { type: "input", q: "Запишите 10% в виде обыкновенной дроби.", a: "1/10", inputHint: "Например: 1/10", hint: "10/100. Сократим на 10.", solution: "10% = 10/100 = 1/10." },
+            { type: "choice", q: "Какой процент составляет половина числа?", options: ["25%", "50%", "75%", "100%"], a: "50%", hint: "Половина — это 1/2, то есть 50/100.", solution: "Половина = 1/2 = 50/100 = 50%." },
+            { type: "match", q: "Сопоставьте проценты и дроби.", pairs: [{ left: "50%", correct: "1/2" }, { left: "25%", correct: "1/4" }, { left: "20%", correct: "1/5" }, { left: "10%", correct: "1/10" }], options: ["1/2", "1/4", "1/5", "1/10"], hint: "Вспомните: 50% — половина, 25% — четверть.", solution: "50% = 1/2, 25% = 1/4, 20% = 1/5, 10% = 1/10." },
+            { type: "choice", q: "Что больше: 5% или 1/10?", options: ["5%", "1/10", "Они равны", "Сравнить нельзя"], a: "1/10", hint: "1/10 = 10%.", solution: "1/10 = 10%. 10% > 5%. Значит, 1/10 больше." },
+            { type: "open", q: "Объясните своими словами, что такое процент. Как бы Вы объяснили это младшему брату или сестре?", hint: "Не нужно идеального определения. Важно, чтобы было понятно тому, кто не знает.", solution: "Несколько вариантов:\n• «Это как копейки в рубле — одна сотая часть».\n• «Если разрезать на 100 частей и взять одну — это 1%».\n• «Сотая доля чего-то»." }
+          ],
+          pauses: [
+            { afterTask: 3, type: "learn", text: "Если ошиблись — не спешите. Попробуйте ещё раз. Ошибка — это место, где растёт понимание." },
+            { afterTask: 6, type: "reflect", question: "Что уже понятно? Что осталось неясным? Запишите для себя." }
+          ],
+          creative: {
+            text: "Придумайте свою задачу на проценты. Не для нас. Для себя, одноклассника или младшего брата.",
+            placeholder: "Ваша задача..."
+          }
+        },
+        deeper: {
+          theory: {
+            paragraphs: [
+              "Проценты связаны с дробями. 1% = 1/100. Значит, 20% = 20/100 = 1/5.",
+              "Так удобно переводить проценты в дроби и обратно — и считать быстрее."
+            ],
+            list: [
+              "10% — это 1/10",
+              "20% — это 1/5",
+              "25% — это 1/4",
+              "50% — это 1/2",
+              "75% — это 3/4",
+              "100% — это целое"
+            ]
+          },
+          examples: [
+            { label: "Пример 1", intro: "Найдём 25% от 400, используя дробь.", chain: ["25% = 1/4", "1/4 от 400 = 400 : 4 = 100"], result: "Ответ: 100." },
+            { label: "Пример 2", intro: "Найдём 20% от 150, используя дробь.", chain: ["20% = 1/5", "1/5 от 150 = 150 : 5 = 30"], result: "Ответ: 30." }
+          ],
+          tasks: [
+            { type: "choice", q: "Какой процент составляет 1/5?", options: ["5%", "20%", "25%", "50%"], a: "20%", hint: "1/5 = 20/100.", solution: "1/5 = 20/100 = 20%." },
+            { type: "input", q: "Запишите 40% в виде обыкновенной дроби.", a: "2/5", inputHint: "Например: 2/5", hint: "40/100. Сократим на 20.", solution: "40% = 40/100. Сократим на 20 — получим 2/5." },
+            { type: "choice", q: "Какой процент составляет 3/4?", options: ["34%", "43%", "75%", "80%"], a: "75%", hint: "3/4 = 75/100.", solution: "3/4 = 75/100 = 75%." },
+            { type: "input", q: "Запишите 75% в виде обыкновенной дроби.", a: "3/4", inputHint: "Например: 3/4", hint: "75/100. Сократим на 25.", solution: "75% = 75/100 = 3/4." },
+            { type: "find-error", q: "Найдите ошибку: «1/8 = 8%».", options: ["Ошибки нет", "Должно быть 12,5%", "Должно быть 18%", "Должно быть 80%"], a: "Должно быть 12,5%", hint: "1/8 = 12,5/100.", solution: "1/8 = 12,5/100 = 12,5%. Не 8%." },
+            { type: "open", q: "Почему удобно иногда переводить проценты в дроби? Приведите пример.", hint: "Например: чтобы посчитать 25% от числа, можно просто разделить на 4.", solution: "Например: 25% от 800 — это 800 : 4 = 200. Проще, чем считать проценты по формуле." }
+          ],
+          pauses: [
+            { afterTask: 2, type: "life", text: "Проценты встречаются в скидках, вкладах, кулинарии, статистике. Где Вы видели их на этой неделе?" }
+          ],
+          creative: {
+            text: "Придумайте пример из жизни, где встречаются проценты, и запишите его.",
+            placeholder: "Ваш пример..."
+          }
+        },
+        deepest: {
+          theory: {
+            paragraphs: [
+              "Иногда проценты помогают увидеть то, что не видно в обычных числах.",
+              "Например, «выросло на 100%» — значит, стало в 2 раза больше. А «выросло на 200%» — в 3 раза.",
+              "А «снизилось на 50%» — значит, уменьшилось вдвое."
+            ]
+          },
+          examples: [
+            { label: "Пример 1", intro: "Число 50 выросло на 100%.", chain: ["Было 100% — стало 200%", "50 × 2 = 100"], result: "Ответ: 100." },
+            { label: "Пример 2", intro: "Число 80 выросло на 50%.", chain: ["Было 100% — стало 150%", "80 × 1,5 = 120"], result: "Ответ: 120." }
+          ],
+          tasks: [
+            { type: "input", q: "Что больше: 1% от 1000 или 10% от 100?", a: "равны", inputHint: "Напишите: равны / больше / меньше", hint: "Посчитайте оба.", solution: "1% от 1000 = 10. 10% от 100 = 10. Значит, они равны." },
+            { type: "choice", q: "Число выросло на 100%. Во сколько раз оно увеличилось?", options: ["В 1 раз", "В 2 раза", "В 100 раз", "В 10 раз"], a: "В 2 раза", hint: "Если было 100%, стало 200%.", solution: "Было 100% — стало 200%. Значит, в 2 раза." },
+            { type: "input", q: "Число снизилось на 50%. Во сколько раз оно уменьшилось?", a: "2", inputHint: "Например: 2", hint: "Снижение на 50% — это уменьшение вдвое.", solution: "Если было 100%, стало 50%. Уменьшилось в 2 раза." },
+            { type: "choice", q: "Число сначала выросло на 50%, а потом снизилось на 50%. Как оно изменилось?", options: ["Не изменилось", "Стало больше", "Стало меньше", "Зависит от числа"], a: "Стало меньше", hint: "Проверьте на конкретном числе.", solution: "Пусть было 100. Выросло на 50% → 150. Снизилось на 50% → 75. Стало меньше." }
+          ],
+          creative: {
+            text: "Придумайте задачу, в которой есть подвох, связанный с процентами.",
+            placeholder: "Ваша задача с подвохом..."
+          }
+        }
+      }
+    },
+    {
+      id: "m2",
+      title: "Процент от числа",
+      layers: {
+        base: {
+          theory: {
+            paragraphs: ["Чтобы найти процент от числа, надо число разделить на 100 и умножить на количество процентов."],
+            formula: "Процент от числа = число : 100 × процент"
+          },
+          examples: [
+            { label: "Пример 1", intro: "Найдём 10% от 200.", chain: ["200 : 100 = 2", "2 × 10 = 20"], result: "Ответ: 20." },
+            { label: "Пример 2", intro: "Найдём 25% от 80.", chain: ["80 : 100 = 0,8", "0,8 × 25 = 20"], result: "Ответ: 20." }
+          ],
+          tasks: [
+            { type: "input", q: "Найдите 10% от 300.", a: "30", inputHint: "Число", hint: "300 : 100 × 10.", solution: "300 : 100 × 10 = 30." },
+            { type: "input", q: "Найдите 50% от 80.", a: "40", inputHint: "Число", hint: "50% — половина.", solution: "80 : 2 = 40." },
+            { type: "input", q: "Найдите 25% от 400.", a: "100", inputHint: "Число", hint: "25% — четверть.", solution: "400 : 4 = 100." },
+            { type: "input", q: "Найдите 20% от 50.", a: "10", inputHint: "Число", hint: "20% — пятая часть.", solution: "50 : 5 = 10." },
+            { type: "input", q: "Найдите 1% от 700.", a: "7", inputHint: "Число", hint: "1% — сотая часть.", solution: "700 : 100 = 7." },
+            { type: "input", q: "Найдите 10% от 45.", a: "4,5", inputHint: "Число", hint: "45 : 10 = 4,5.", solution: "45 : 100 × 10 = 4,5." }
+          ]
+        },
+        deeper: {
+          theory: {
+            paragraphs: ["Проценты можно считать от любого числа — не только от круглого."]
+          },
+          examples: [
+            { label: "Пример 1", intro: "Найдём 30% от 250.", chain: ["250 : 100 = 2,5", "2,5 × 30 = 75"], result: "Ответ: 75." },
+            { label: "Пример 2", intro: "Найдём 15% от 300.", chain: ["300 : 100 = 3", "3 × 15 = 45"], result: "Ответ: 45." }
+          ],
+          tasks: [
+            { type: "input", q: "Найдите 15% от 200.", a: "30", inputHint: "Число", hint: "200 : 100 × 15.", solution: "200 : 100 = 2. 2 × 15 = 30." },
+            { type: "input", q: "Найдите 30% от 500.", a: "150", inputHint: "Число", hint: "500 : 100 × 30.", solution: "500 : 100 = 5. 5 × 30 = 150." },
+            { type: "input", q: "В классе 20 учеников. 5 из них — отличники. Сколько процентов класса — отличники?", a: "25", inputHint: "Число", hint: "5/20 = 1/4 = 25%.", solution: "5 из 20 — это 5/20 = 1/4 = 25%." },
+            { type: "input", q: "Найдите 12% от 150.", a: "18", inputHint: "Число", hint: "150 : 100 × 12.", solution: "150 : 100 = 1,5. 1,5 × 12 = 18." },
+            { type: "input", q: "В книге 240 страниц. Ученик прочитал 25%. Сколько страниц он прочитал?", a: "60", inputHint: "Число", hint: "240 : 4.", solution: "25% = 1/4. 240 : 4 = 60 страниц." }
+          ]
+        },
+        deepest: {
+          theory: {
+            paragraphs: [
+              "Иногда процент от числа можно найти в уме — если увидеть удобную дробь.",
+              "20% — это 1/5. 25% — 1/4. 50% — 1/2. 12,5% — 1/8."
+            ]
+          },
+          examples: [
+            { label: "Пример 1", intro: "Найдём 12,5% от 800.", chain: ["12,5% = 1/8", "800 : 8 = 100"], result: "Ответ: 100." }
+          ],
+          tasks: [
+            { type: "input", q: "Найдите 3% от 5000.", a: "150", inputHint: "Число", hint: "5000 : 100 × 3.", solution: "5000 : 100 = 50. 50 × 3 = 150." },
+            { type: "input", q: "Найдите 12,5% от 800.", a: "100", inputHint: "Число", hint: "12,5% — это 1/8.", solution: "12,5% = 1/8. 800 : 8 = 100." },
+            { type: "input", q: "Найдите 7% от 300.", a: "21", inputHint: "Число", hint: "300 : 100 × 7.", solution: "300 : 100 = 3. 3 × 7 = 21." }
+          ]
+        }
+      }
+    },
+    {
+      id: "m3",
+      title: "Число по проценту",
+      layers: {
+        base: {
+          theory: {
+            paragraphs: ["Если известно, сколько составляет процент от числа, можно найти само число."],
+            formula: "Число = известная часть : процент × 100"
+          },
+          examples: [
+            { label: "Пример 1", intro: "20% числа равны 60. Найдём число.", chain: ["60 : 20 = 3 (это 1%)", "3 × 100 = 300"], result: "Ответ: 300." },
+            { label: "Пример 2", intro: "10% числа равны 12. Найдём число.", chain: ["12 : 10 = 1,2 (1%)", "1,2 × 100 = 120"], result: "Ответ: 120." }
+          ],
+          tasks: [
+            { type: "input", q: "Найдите число, если 20% равны 60.", a: "300", inputHint: "Число", hint: "60 : 20 × 100.", solution: "60 : 20 = 3 (1%). 3 × 100 = 300." },
+            { type: "input", q: "Найдите число, если 50% равны 25.", a: "50", inputHint: "Число", hint: "50% — половина.", solution: "Если 50% — это 25, то всё число 50." },
+            { type: "input", q: "Найдите число, если 10% равны 7.", a: "70", inputHint: "Число", hint: "10% — одна десятая.", solution: "7 × 10 = 70." },
+            { type: "input", q: "Найдите число, если 25% равны 20.", a: "80", inputHint: "Число", hint: "25% — четверть.", solution: "20 × 4 = 80." }
+          ]
+        },
+        deeper: {
+          theory: {
+            paragraphs: ["Это обратная задача. Мы знаем часть — ищем целое.", "Помогает такой ход: сначала найти 1%, потом — всё число."]
+          },
+          examples: [
+            { label: "Пример 1", intro: "15% числа равны 45.", chain: ["45 : 15 = 3 (1%)", "3 × 100 = 300"], result: "Ответ: 300." },
+            { label: "Пример 2", intro: "25% числа равны 15.", chain: ["15 : 25 = 0,6 (1%)", "0,6 × 100 = 60"], result: "Ответ: 60." }
+          ],
+          tasks: [
+            { type: "input", q: "Найдите число, если 10% равны 12.", a: "120", inputHint: "Число", hint: "10% — одна десятая.", solution: "12 × 10 = 120." },
+            { type: "input", q: "Найдите число, если 25% равны 15.", a: "60", inputHint: "Число", hint: "25% — четверть.", solution: "15 × 4 = 60." },
+            { type: "input", q: "Найдите число, если 20% равны 8.", a: "40", inputHint: "Число", hint: "20% — пятая часть.", solution: "8 × 5 = 40." },
+            { type: "input", q: "Ученик прочитал 30% книги, это 90 страниц. Сколько всего страниц?", a: "300", inputHint: "Число", hint: "90 : 30 × 100.", solution: "90 : 30 = 3 (1%). 3 × 100 = 300 страниц." }
+          ]
+        },
+        deepest: {
+          theory: {
+            paragraphs: ["В жизни часто нужно найти целое по известной части. Это помогает понять цены, зарплаты, проценты по вкладам."]
+          },
+          examples: [
+            { label: "Пример 1", intro: "4% числа равны 80.", chain: ["80 : 4 = 20 (1%)", "20 × 100 = 2000"], result: "Ответ: 2000." }
+          ],
+          tasks: [
+            { type: "input", q: "Найдите число, если 4% равны 80.", a: "2000", inputHint: "Число", hint: "80 : 4 × 100.", solution: "80 : 4 = 20 (1%). 20 × 100 = 2000." },
+            { type: "input", q: "Найдите число, если 15% равны 45.", a: "300", inputHint: "Число", hint: "45 : 15 × 100.", solution: "45 : 15 = 3 (1%). 3 × 100 = 300." },
+            { type: "input", q: "Найдите число, если 40% равны 120.", a: "300", inputHint: "Число", hint: "120 : 40 × 100.", solution: "120 : 40 = 3 (1%). 3 × 100 = 300." }
+          ]
+        }
+      }
+    },
+    {
+      id: "m4",
+      title: "Проценты в жизни",
+      layers: {
+        base: {
+          theory: {
+            paragraphs: ["Проценты помогают считать скидки, наценки, банковские вклады."]
+          },
+          examples: [
+            { label: "Пример 1", intro: "Товар 500 рублей со скидкой 20%.", chain: ["20% от 500 = 100", "500 − 100 = 400"], result: "Ответ: 400 рублей." },
+            { label: "Пример 2", intro: "Платье 2000 рублей со скидкой 30%.", chain: ["30% от 2000 = 600", "2000 − 600 = 1400"], result: "Ответ: 1400 рублей." }
+          ],
+          tasks: [
+            { type: "input", q: "Товар стоил 500 рублей. Скидка 20%. Сколько стал стоить?", a: "400", inputHint: "Число", hint: "20% от 500 = 100.", solution: "20% от 500 = 100. 500 − 100 = 400." },
+            { type: "input", q: "Платье 2000 рублей. Скидка 30%. Сколько стоит?", a: "1400", inputHint: "Число", hint: "30% от 2000 = 600.", solution: "30% от 2000 = 600. 2000 − 600 = 1400." },
+            { type: "input", q: "Кроссовки 3000 рублей. Скидка 10%. Сколько стоят?", a: "2700", inputHint: "Число", hint: "10% от 3000 = 300.", solution: "10% от 3000 = 300. 3000 − 300 = 2700." },
+            { type: "input", q: "Телефон 15000 рублей. Скидка 20%. Сколько стоит?", a: "12000", inputHint: "Число", hint: "20% от 15000 = 3000.", solution: "20% от 15000 = 3000. 15000 − 3000 = 12000." }
+          ]
+        },
+        deeper: {
+          theory: {
+            paragraphs: ["Скидка уменьшает цену. Наценка увеличивает.", "Вклад в банке растёт на процент. Через год сумма увеличивается."]
+          },
+          examples: [
+            { label: "Пример 1", intro: "Вклад 8000 рублей под 5% годовых.", chain: ["5% от 8000 = 400", "8000 + 400 = 8400"], result: "Ответ: 8400 рублей." },
+            { label: "Пример 2", intro: "Рубашка 1500 рублей, цену повысили на 10%.", chain: ["10% от 1500 = 150", "1500 + 150 = 1650"], result: "Ответ: 1650 рублей." }
+          ],
+          tasks: [
+            { type: "input", q: "Рубашка 1500 рублей. Цену повысили на 10%. Сколько стоит?", a: "1650", inputHint: "Число", hint: "10% от 1500 = 150.", solution: "10% от 1500 = 150. 1500 + 150 = 1650." },
+            { type: "input", q: "Вклад 8000 рублей под 5% годовых. Сколько будет через год?", a: "8400", inputHint: "Число", hint: "5% от 8000 = 400.", solution: "5% от 8000 = 400. 8000 + 400 = 8400." },
+            { type: "input", q: "Кофе 250 рублей. Цену повысили на 20%. Сколько стоит?", a: "300", inputHint: "Число", hint: "20% от 250 = 50.", solution: "20% от 250 = 50. 250 + 50 = 300." },
+            { type: "input", q: "Вклад 12000 рублей под 10% годовых. Сколько будет через год?", a: "13200", inputHint: "Число", hint: "10% от 12000 = 1200.", solution: "10% от 12000 = 1200. 12000 + 1200 = 13200." }
+          ]
+        },
+        deepest: {
+          theory: {
+            paragraphs: [
+              "Когда цена меняется несколько раз — сначала снизилась, потом ещё раз снизилась — это не одно и то же, что снижение на сумму процентов.",
+              "Каждый раз процент считается от новой цены."
+            ]
+          },
+          examples: [
+            { label: "Пример 1", intro: "Книга 400 рублей. Сначала −10%, потом ещё −10%.", chain: ["После первого: 400 − 40 = 360", "После второго: 360 − 36 = 324"], result: "Ответ: 324 рубля." },
+            { label: "Пример 2", intro: "Товар 1000 рублей. Сначала −20%, потом ещё −10%.", chain: ["После первого: 1000 − 200 = 800", "После второго: 800 − 80 = 720"], result: "Ответ: 720 рублей." }
+          ],
+          tasks: [
+            { type: "input", q: "Книга 400 рублей. Сначала −10%, потом ещё −10% от новой цены. Сколько стоит?", a: "324", inputHint: "Число", hint: "После первого: 360. После второго: 324.", solution: "400 − 40 = 360. 360 − 36 = 324." },
+            { type: "input", q: "Товар 1000 рублей. Сначала −20%, потом ещё −10% от новой цены. Сколько стоит?", a: "720", inputHint: "Число", hint: "После первого: 800. После второго: 720.", solution: "1000 − 200 = 800. 800 − 80 = 720." },
+            { type: "input", q: "Телефон 20000 рублей. Сначала −25%, потом ещё −20% от новой цены. Сколько стоит?", a: "12000", inputHint: "Число", hint: "После первого: 15000. После второго: 12000.", solution: "20000 − 5000 = 15000. 15000 − 3000 = 12000." }
+          ]
+        }
+      }
+    },
+    {
+      id: "m5",
+      title: "Ловушки",
+      layers: {
+        base: {
+          theory: {
+            paragraphs: ["Иногда в задачах на проценты есть подвох. Главное — не спешить и думать."]
+          },
+          examples: [
+            { label: "Пример 1", intro: "Цена подорожала на 20%, потом подешевела на 20%.", chain: ["Было 100 → 120 → 96", "Стала меньше на 4%"], result: "Ответ: стала меньше." }
+          ],
+          tasks: [
+            { type: "choice", q: "Цена сначала подорожала на 20%, потом подешевела на 20%. Как изменилась?", options: ["Не изменилась", "Стала больше", "Стала меньше", "Зависит от цены"], a: "Стала меньше", hint: "Проверьте на конкретном числе.", solution: "Пусть было 100. После подорожания — 120. После снижения на 20% — 96. Стала меньше." },
+            { type: "choice", q: "Цена сначала выросла на 100%, а потом упала на 50%. Как она изменилась по сравнению с начальной?", options: ["Выросла", "Упала", "Не изменилась", "Зависит от начальной цены"], a: "Не изменилась", hint: "Проверьте на числе 100.", solution: "Пусть было 100. После роста на 100% — стало 200. После падения на 50% — снова 100. Цена вернулась к исходной, то есть не изменилась." }
+          ]
+        },
+        deeper: {
+          theory: {
+            paragraphs: ["Полезно проверять на конкретных числах. Возьмите 100 — и посмотрите, что получится."]
+          },
+          examples: [
+            { label: "Пример 1", intro: "Сравним 20% от 300 и 30% от 200.", chain: ["20% от 300 = 60", "30% от 200 = 60"], result: "Ответ: они равны." }
+          ],
+          tasks: [
+            { type: "choice", q: "Что больше: 20% от 300 или 30% от 200?", options: ["20% от 300", "30% от 200", "Они равны", "Сравнить нельзя"], a: "Они равны", hint: "Посчитайте оба.", solution: "20% от 300 = 60. 30% от 200 = 60." },
+            { type: "choice", q: "Что больше: 50% от 80 или 80% от 50?", options: ["50% от 80", "80% от 50", "Они равны", "Сравнить нельзя"], a: "Они равны", hint: "Посчитайте оба.", solution: "50% от 80 = 40. 80% от 50 = 40. Равны." },
+            { type: "choice", q: "Что больше: 25% от 100 или 100% от 25?", options: ["25% от 100", "100% от 25", "Они равны", "Сравнить нельзя"], a: "Они равны", hint: "Посчитайте оба.", solution: "25% от 100 = 25. 100% от 25 = 25. Равны." }
+          ]
+        },
+        deepest: {
+          theory: {
+            paragraphs: ["Важно понять, от чего считать процент — от старого числа или от нового."]
+          },
+          examples: [
+            { label: "Пример 1", intro: "Товар куплен за 500, продан за 600. Сколько процентов прибыли?", chain: ["Прибыль = 100", "100/500 = 1/5 = 20%"], result: "Ответ: 20%." }
+          ],
+          tasks: [
+            { type: "input", q: "Женщина купила шубу за 30 000, продала за 24 000. Сколько процентов потеряла?", a: "20", inputHint: "Число", hint: "Потеряла 6000.", solution: "Потеряла 6000. 6000/30000 = 1/5 = 20%." },
+            { type: "input", q: "Магазин купил товар за 500 рублей, продал за 600. Сколько процентов прибыли?", a: "20", inputHint: "Число", hint: "Прибыль 100 рублей.", solution: "Прибыль 100. 100/500 = 1/5 = 20%." },
+            { type: "input", q: "Цена выросла с 400 до 500 рублей. На сколько процентов?", a: "25", inputHint: "Число", hint: "Разница 100.", solution: "Разница 100. 100/400 = 1/4 = 25%." }
+          ]
+        }
+      }
+    }
+  ],
+  notes: {
+    prompts: [
+      "Что было самым важным?",
+      "Что осталось непонятным?",
+      "Где в жизни Вы встречали проценты?",
+      "Одна мысль, которая осталась с Вами."
+    ]
+  }
+};
+
+const DIFFICULTIES = ['easy', 'hard'];
+const DIFFICULTY_NAMES = { easy: 'Простая задача', hard: 'Посложнее' };
+
+let state = {
+  currentMicrotopic: -1,
+  difficulty: 'easy',
+  step: 'challenge',
+  taskIndex: 0,
+  exampleIndex: 0,
+  answered: false,
+  selectedAnswer: null,
+  notesOpen: false,
+  matchSelections: {},
+  currentPause: null,
+  taskOverride: null,
+  stat: { correct: 0, attempts: 0, streak: 0 }
+};
+
+function loadProgress() {
+  try {
+    return JSON.parse(localStorage.getItem('proto_v10_progress') || '{}');
+  } catch (e) { return {}; }
+}
+
+function markLayerDone(mtId, difficulty) {
+  const progress = loadProgress();
+  if (!progress[mtId]) progress[mtId] = {};
+  progress[mtId][difficulty] = true;
+  localStorage.setItem('proto_v10_progress', JSON.stringify(progress));
+}
+
+function loadState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('proto_v10_state') || 'null');
+    if (saved && saved.stat) state.stat = saved.stat;
+  } catch (e) {}
+}
+
+function saveStat() {
+  localStorage.setItem('proto_v10_state', JSON.stringify({ stat: state.stat }));
+}
+
+function resetAll() {
+  if (confirm('Начать заново? Прогресс, статистика и заметки будут стёрты.')) {
+    Object.keys(localStorage)
+      .filter(k => k.indexOf('proto_v10_') === 0)
+      .forEach(k => localStorage.removeItem(k));
+    location.reload();
+  }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function normalize(text) {
+  return text.toString().toLowerCase().replace(/\s/g, '').replace(',', '.');
+}
+
+function getExamples(layer) {
+  if (layer.examples) return layer.examples;
+  if (layer.example) return [layer.example];
+  return [];
+}
+
+// Собирает «сложный» слой из deeper + deepest
+function buildHardLayer(mt) {
+  const d = mt.layers.deeper || {};
+  const dd = mt.layers.deepest || {};
+  return {
+    challenge: d.challenge || null,
+    theory: d.theory || dd.theory || null,
+    examples: [].concat(d.examples || [], dd.examples || []),
+    tasks: [].concat(d.tasks || [], dd.tasks || []),
+    pauses: d.pauses || [],
+    creative: d.creative || dd.creative || null
+  };
+}
+
+// Возвращает активный «слой» для текущей сложности
+function getActiveLayer(mt) {
+  if (state.difficulty === 'hard') return buildHardLayer(mt);
+  return mt.layers.base;
+}
+
+function getCurrentTask() {
+  const mt = topic.microtopics[state.currentMicrotopic];
+  const layer = getActiveLayer(mt);
+  return state.taskOverride || layer.tasks[state.taskIndex];
+}
+
+function renderStats() {
+  document.getElementById('stat-correct').textContent = state.stat.correct;
+  document.getElementById('stat-attempts').textContent = state.stat.attempts;
+  document.getElementById('stat-streak').textContent = state.stat.streak;
+}
+
+function renderMicrotopicTabs() {
+  const container = document.getElementById('microtopic-tabs');
+  const progress = loadProgress();
+  let html = '';
+  topic.microtopics.forEach((mt, i) => {
+    const active = i === state.currentMicrotopic && !state.notesOpen;
+    const p = progress[mt.id] || {};
+    const done = (p.easy ? 1 : 0) + (p.hard ? 1 : 0);
+    let mark = '';
+    if (done >= 2) mark = ' ✓';
+    else if (done > 0) mark = ' •';
+    html += '<button class="microtopic-tab' + (active ? ' active' : '') + '" onclick="goToMicrotopic(' + i + ')">' + escapeHtml(mt.title) + mark + '</button>';
+  });
+  html += '<button class="notes-tab' + (state.notesOpen ? ' active' : '') + '" onclick="openNotes()">Заметки</button>';
+  container.innerHTML = html;
+}
+
+function render() {
+  renderStats();
+  renderMicrotopicTabs();
+
+  const cover = document.getElementById('cover');
+  const view = document.getElementById('microtopic-view');
+  const notes = document.getElementById('notes-screen');
+
+  if (state.notesOpen) {
+    cover.classList.add('hidden');
+    view.classList.add('hidden');
+    notes.classList.remove('hidden');
+    renderNotes();
+    return;
+  }
+
+  notes.classList.add('hidden');
+
+  if (state.currentMicrotopic === -1) {
+    cover.classList.remove('hidden');
+    view.classList.add('hidden');
+    return;
+  }
+
+  cover.classList.add('hidden');
+  view.classList.remove('hidden');
+
+  const mt = topic.microtopics[state.currentMicrotopic];
+  document.getElementById('microtopic-title').textContent = mt.title;
+
+  // Две кнопки вместо трёх слоёв
+  const layerTabs = document.getElementById('layer-tabs');
+  let tabsHtml = '';
+  DIFFICULTIES.forEach(diff => {
+    const active = state.difficulty === diff;
+    tabsHtml += '<button class="layer-tab' + (active ? ' active' : '') + '" onclick="switchDifficulty(\'' + diff + '\')">' + DIFFICULTY_NAMES[diff] + '</button>';
+  });
+  layerTabs.innerHTML = tabsHtml;
+
+  const container = document.getElementById('content');
+  const layer = getActiveLayer(mt);
+  renderLayerContent(container, mt, layer);
+}
+
+function renderLayerContent(container, mt, layer) {
+  let html = '';
+
+  if (state.step === 'challenge') {
+    if (!layer.challenge) { state.step = 'theory'; }
+    else {
+      html += '<div class="challenge">';
+      html += '<div class="challenge-label">Задача-вызов</div>';
+      html += '<div class="challenge-question">' + escapeHtml(layer.challenge.question) + '</div>';
+      html += '<div class="challenge-note">' + escapeHtml(layer.challenge.note) + '</div>';
+      html += '<div class="buttons"><button class="btn btn-primary" onclick="stepTo(\'theory\')">Дальше</button></div>';
+      html += '</div>';
+      container.innerHTML = html;
+      return;
+    }
+  }
+
+  if (state.step === 'theory') {
+    if (!layer.theory) { state.step = 'example'; state.exampleIndex = 0; }
+    else {
+      html += '<div class="theory">';
+      html += '<div class="theory-label">Разбираемся</div>';
+      if (layer.theory.paragraphs) {
+        layer.theory.paragraphs.forEach(p => { html += '<p>' + escapeHtml(p) + '</p>'; });
+      }
+      if (layer.theory.list) {
+        html += '<ul>';
+        layer.theory.list.forEach(item => { html += '<li>' + escapeHtml(item) + '</li>'; });
+        html += '</ul>';
+      }
+      if (layer.theory.formula) {
+        html += '<div class="formula">' + escapeHtml(layer.theory.formula) + '</div>';
+      }
+      html += '<div class="buttons"><button class="btn btn-primary" onclick="stepTo(\'example\'); state.exampleIndex = 0; render();">К примеру</button></div>';
+      html += '</div>';
+      container.innerHTML = html;
+      return;
+    }
+  }
+
+  if (state.step === 'example') {
+    const examples = getExamples(layer);
+    if (examples.length === 0) { state.step = 'task'; state.taskIndex = 0; }
+    else {
+      const ex = examples[state.exampleIndex];
+      html += '<div class="example">';
+      html += '<div class="example-label">' + escapeHtml(ex.label) + '</div>';
+      html += '<p>' + escapeHtml(ex.intro) + '</p>';
+      html += '<div class="example-chain">';
+      ex.chain.forEach(step => { html += escapeHtml(step) + '<br>'; });
+      html += '</div>';
+      html += '<p><strong>' + escapeHtml(ex.result) + '</strong></p>';
+      html += '<div class="example-counter">Пример ' + (state.exampleIndex + 1) + ' из ' + examples.length + '</div>';
+      html += '<div class="buttons">';
+      if (examples.length > 1) {
+        html += '<button class="btn btn-warm" onclick="nextExample()">Другой пример</button>';
+      }
+      html += '<button class="btn btn-primary" onclick="stepTo(\'task\'); state.taskIndex = 0; render();">К заданиям</button>';
+      html += '</div>';
+      html += '</div>';
+      container.innerHTML = html;
+      return;
+    }
+  }
+
+  if (state.step === 'task') {
+    const task = getCurrentTask();
+    if (!task) {
+      if (layer.creative && state.step !== 'creative') {
+        state.step = 'creative';
+      } else {
+        state.step = 'complete';
+      }
+      renderLayerContent(container, mt, layer);
+      return;
+    }
+    html += renderTask(task);
+    html += '<div class="feedback" id="feedback"></div>';
+    html += '<div class="solution-box" id="solution-box"></div>';
+    html += '<div class="buttons" id="task-buttons">';
+    html += '<button class="btn btn-primary" id="check-btn" onclick="checkTask()">Проверить</button>';
+    html += '<button class="btn btn-secondary" id="hint-btn" onclick="showHint()">Подсказка</button>';
+    if (layer.tasks.length > 1) {
+      html += '<button class="btn btn-warm" id="another-btn" onclick="anotherTask()">Другая задача</button>';
+    }
+    html += '<button class="btn btn-warm hidden" id="solution-btn" onclick="showSolution()">Решение</button>';
+    html += '<button class="btn btn-secondary hidden" id="retry-btn" onclick="retryTask()">Попробовать снова</button>';
+    html += '<button class="btn btn-primary hidden" id="next-btn" onclick="nextTask()">Дальше</button>';
+    html += '</div>';
+    container.innerHTML = html;
+    bindInputEvents();
+    return;
+  }
+
+  if (state.step === 'pause') {
+    const pause = state.currentPause;
+    if (!pause) { state.step = 'task'; renderLayerContent(container, mt, layer); return; }
+    html += renderPause(pause);
+    html += '<div class="buttons"><button class="btn btn-primary" onclick="afterPause()">Продолжить</button></div>';
+    container.innerHTML = html;
+    return;
+  }
+
+  if (state.step === 'creative') {
+    const savedCreative = localStorage.getItem('proto_v10_creative_' + mt.id + '_' + state.difficulty) || '';
+    html += '<div class="creative">';
+    html += '<div class="creative-label">Придумайте своё</div>';
+    html += '<div class="creative-text">' + escapeHtml(layer.creative.text) + '</div>';
+    html += '<textarea class="creative-input" id="creative-input" placeholder="' + escapeHtml(layer.creative.placeholder) + '">' + escapeHtml(savedCreative) + '</textarea>';
+    html += '<div class="buttons" style="margin-top: 16px;">';
+    html += '<button class="btn btn-primary" onclick="finishCreative()">Готово</button>';
+    html += '</div>';
+    html += '</div>';
+    container.innerHTML = html;
+    return;
+  }
+
+  // Слой пройден
+  html += '<div class="layer-complete">';
+  html += '<h3 class="layer-complete-title">Слой пройден</h3>';
+  html += '<p class="layer-complete-text">Хотите попробовать посложнее или идти к следующей теме?</p>';
+  html += '<div class="buttons" style="justify-content: center;">';
+  if (state.difficulty === 'easy') {
+    html += '<button class="btn btn-warm" onclick="switchDifficulty(\'hard\')">Посложнее</button>';
+  }
+  if (state.currentMicrotopic < topic.microtopics.length - 1) {
+    html += '<button class="btn btn-primary" onclick="nextMicrotopic()">К следующей теме</button>';
+  } else {
+    html += '<button class="btn btn-primary" onclick="openNotes()">К заметкам</button>';
+  }
+  html += '</div>';
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function renderTask(task) {
+  let html = '<div class="task-container">';
+
+  if (task.type === 'choice' || task.type === 'find-error') {
+    html += '<div class="task-question">' + escapeHtml(task.q) + '</div>';
+    html += '<div class="options">';
+    task.options.forEach(opt => {
+      html += '<button class="option" onclick="selectOption(this)">' + escapeHtml(opt) + '</button>';
+    });
+    html += '</div>';
+  } else if (task.type === 'input') {
+    html += '<div class="task-question">' + escapeHtml(task.q) + '</div>';
+    if (task.inputHint) html += '<div class="input-hint">' + escapeHtml(task.inputHint) + '</div>';
+    html += '<input type="text" class="input-answer" id="input-answer" placeholder="Ваш ответ">';
+  } else if (task.type === 'match') {
+    html += '<div class="task-question">' + escapeHtml(task.q) + '</div>';
+    state.matchSelections = {};
+    task.pairs.forEach((pair, i) => {
+      html += '<div class="match-row">';
+      html += '<div class="match-left">' + escapeHtml(pair.left) + '</div>';
+      html += '<div class="match-right">';
+      html += '<select class="match-select" onchange="setMatch(' + i + ', this.value)">';
+      html += '<option value="">Выберите...</option>';
+      task.options.forEach(opt => {
+        html += '<option value="' + escapeHtml(opt) + '">' + escapeHtml(opt) + '</option>';
+      });
+      html += '</select>';
+      html += '</div>';
+      html += '</div>';
+    });
+  } else if (task.type === 'open') {
+    html += '<div class="task-question">' + escapeHtml(task.q) + '</div>';
+    html += '<textarea class="open-answer" id="open-answer" placeholder="Пишите своими словами..."></textarea>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function renderPause(pause) {
+  const labels = { learn: 'Как учиться', life: 'Связь с жизнью', reflect: 'Рефлексия' };
+  let html = '<div class="pause pause-' + (pause.type || 'learn') + '">';
+  html += '<div class="pause-label">' + (labels[pause.type] || 'Пауза') + '</div>';
+  if (pause.text) html += '<div>' + escapeHtml(pause.text) + '</div>';
+  if (pause.question) {
+    html += '<div class="pause-question">' + escapeHtml(pause.question) + '</div>';
+    html += '<textarea class="pause-answer" placeholder="Ваша мысль..."></textarea>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function nextExample() {
+  const mt = topic.microtopics[state.currentMicrotopic];
+  const layer = getActiveLayer(mt);
+  const examples = getExamples(layer);
+  state.exampleIndex = (state.exampleIndex + 1) % examples.length;
+  render();
+}
+
+function anotherTask() {
+  const mt = topic.microtopics[state.currentMicrotopic];
+  const layer = getActiveLayer(mt);
+  const current = getCurrentTask();
+  const candidates = layer.tasks.filter(t => t !== current);
+  if (candidates.length === 0) return;
+  state.taskOverride = candidates[Math.floor(Math.random() * candidates.length)];
+  state.answered = false;
+  state.selectedAnswer = null;
+  state.matchSelections = {};
+  render();
+}
+
+function checkTask() {
+  const task = getCurrentTask();
+  const feedback = document.getElementById('feedback');
+  let userAnswer = '';
+
+  if (task.type === 'choice' || task.type === 'find-error') {
+    if (!state.selectedAnswer) {
+      feedback.className = 'feedback show hint';
+      feedback.textContent = 'Выберите один из вариантов, пожалуйста.';
+      return;
+    }
+    userAnswer = state.selectedAnswer;
+  } else if (task.type === 'input') {
+    const input = document.getElementById('input-answer');
+    userAnswer = input.value.trim();
+    if (!userAnswer) {
+      feedback.className = 'feedback show hint';
+      feedback.textContent = 'Напишите ответ, пожалуйста.';
+      return;
+    }
+  } else if (task.type === 'match') {
+    if (Object.keys(state.matchSelections).length !== task.pairs.length) {
+      feedback.className = 'feedback show hint';
+      feedback.textContent = 'Заполните все пары, пожалуйста.';
+      return;
+    }
+    let allCorrect = true;
+    task.pairs.forEach((pair, i) => {
+      if (state.matchSelections[i] !== pair.correct) allCorrect = false;
+    });
+    state.stat.attempts++;
+    if (allCorrect) {
+      state.stat.correct++;
+      state.stat.streak++;
+      feedback.className = 'feedback show correct';
+      feedback.textContent = 'Верно. ' + (task.hint || '');
+      finishTask();
+    } else {
+      state.stat.streak = 0;
+      feedback.className = 'feedback show incorrect';
+      feedback.textContent = 'Не всё верно. Проверьте ещё раз.';
+      showRetryButtons();
+    }
+    saveStat();
+    renderStats();
+    return;
+  } else if (task.type === 'open') {
+    const textarea = document.getElementById('open-answer');
+    userAnswer = textarea.value.trim();
+    if (!userAnswer) {
+      feedback.className = 'feedback show hint';
+      feedback.textContent = 'Напишите что-нибудь, пожалуйста.';
+      return;
+    }
+    state.stat.attempts++;
+    state.stat.correct++;
+    state.stat.streak++;
+    saveStat();
+    renderStats();
+    feedback.className = 'feedback show correct';
+    feedback.textContent = 'Спасибо. Ваша мысль записана. ' + (task.hint || '');
+    textarea.disabled = true;
+    finishTask();
+    return;
+  }
+
+  state.stat.attempts++;
+  const isCorrect = normalize(userAnswer) === normalize(task.a);
+
+  if (task.type === 'choice' || task.type === 'find-error') {
+    document.querySelectorAll('.option').forEach(b => {
+      b.classList.remove('selected');
+      b.classList.add('disabled');
+      if (normalize(b.textContent) === normalize(task.a)) b.classList.add('correct');
+      else if (normalize(b.textContent) === normalize(userAnswer) && !isCorrect) b.classList.add('incorrect');
+    });
+  }
+
+  if (isCorrect) {
+    state.stat.correct++;
+    state.stat.streak++;
+    feedback.className = 'feedback show correct';
+    feedback.textContent = 'Верно. ' + (task.hint || '');
+    finishTask();
+  } else {
+    state.stat.streak = 0;
+    feedback.className = 'feedback show hint';
+    feedback.textContent = task.hint || 'Попробуйте ещё раз. Подумайте.';
+    showRetryButtons();
+  }
+  saveStat();
+  renderStats();
+}
+
+function showRetryButtons() {
+  document.getElementById('check-btn').classList.add('hidden');
+  document.getElementById('hint-btn').classList.add('hidden');
+  const another = document.getElementById('another-btn');
+  if (another) another.classList.add('hidden');
+  document.getElementById('retry-btn').classList.remove('hidden');
+  document.getElementById('solution-btn').classList.remove('hidden');
+}
+
+function finishTask() {
+  state.answered = true;
+  document.getElementById('check-btn').classList.add('hidden');
+  document.getElementById('hint-btn').classList.add('hidden');
+  const another = document.getElementById('another-btn');
+  if (another) another.classList.add('hidden');
+  document.getElementById('retry-btn').classList.add('hidden');
+  document.getElementById('solution-btn').classList.add('hidden');
+  document.getElementById('next-btn').classList.remove('hidden');
+
+  const inp = document.getElementById('input-answer');
+  if (inp) inp.disabled = true;
+  document.querySelectorAll('.match-select').forEach(s => s.disabled = true);
+}
+
+function retryTask() {
+  state.answered = false;
+  state.selectedAnswer = null;
+  const feedback = document.getElementById('feedback');
+  feedback.className = 'feedback';
+  feedback.textContent = '';
+  document.getElementById('retry-btn').classList.add('hidden');
+  document.getElementById('solution-btn').classList.add('hidden');
+  document.getElementById('check-btn').classList.remove('hidden');
+  document.getElementById('hint-btn').classList.remove('hidden');
+  const another = document.getElementById('another-btn');
+  if (another) another.classList.remove('hidden');
+  document.querySelectorAll('.option').forEach(b => {
+    b.classList.remove('selected', 'correct', 'incorrect', 'disabled');
+  });
+}
+
+function showHint() {
+  const task = getCurrentTask();
+  const feedback = document.getElementById('feedback');
+  feedback.className = 'feedback show hint';
+  feedback.textContent = task.hint || 'Постарайтесь вспомнить правило.';
+  document.getElementById('solution-btn').classList.remove('hidden');
+}
+
+function showSolution() {
+  const task = getCurrentTask();
+  const box = document.getElementById('solution-box');
+  box.innerHTML = '<div class="solution-label">Разбор</div>' + escapeHtml(task.solution || task.hint || '');
+  box.classList.add('show');
+  document.getElementById('next-btn').classList.remove('hidden');
+  document.getElementById('retry-btn').classList.add('hidden');
+  document.getElementById('solution-btn').classList.add('hidden');
+  const another = document.getElementById('another-btn');
+  if (another) another.classList.add('hidden');
+}
+
+function setMatch(index, value) {
+  state.matchSelections[index] = value;
+}
+
+function selectOption(btn) {
+  if (state.answered) return;
+  document.querySelectorAll('.option').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.selectedAnswer = btn.textContent;
+}
+
+function nextTask() {
+  const mt = topic.microtopics[state.currentMicrotopic];
+  const layer = getActiveLayer(mt);
+  const pause = layer.pauses ? layer.pauses.find(p => p.afterTask === state.taskIndex) : null;
+
+  state.answered = false;
+  state.selectedAnswer = null;
+  state.taskOverride = null;
+
+  if (pause) {
+    state.currentPause = pause;
+    state.step = 'pause';
+    render();
+    return;
+  }
+
+  state.taskIndex++;
+
+  if (state.taskIndex >= layer.tasks.length) {
+    markLayerDone(mt.id, state.difficulty);
+    if (layer.creative) {
+      state.step = 'creative';
+    } else {
+      state.step = 'complete';
+    }
+  }
+  render();
+}
+
+function afterPause() {
+  state.currentPause = null;
+  state.step = 'task';
+  state.taskIndex++;
+  const mt = topic.microtopics[state.currentMicrotopic];
+  const layer = getActiveLayer(mt);
+  if (state.taskIndex >= layer.tasks.length) {
+    markLayerDone(mt.id, state.difficulty);
+    if (layer.creative) state.step = 'creative';
+    else state.step = 'complete';
+  }
+  render();
+}
+
+function finishCreative() {
+  const el = document.getElementById('creative-input');
+  const mt = topic.microtopics[state.currentMicrotopic];
+  localStorage.setItem('proto_v10_creative_' + mt.id + '_' + state.difficulty, el.value || '');
+  state.step = 'complete';
+  render();
+}
+
+function stepTo(step) {
+  state.step = step;
+  if (step === 'task') { state.taskIndex = 0; state.taskOverride = null; }
+  if (step === 'example') state.exampleIndex = 0;
+  render();
+}
+
+function goToMicrotopic(i) {
+  state.notesOpen = false;
+  if (i === state.currentMicrotopic) {
+    state.currentMicrotopic = -1;
+    render();
+    return;
+  }
+  state.currentMicrotopic = i;
+  state.difficulty = 'easy';
+  state.step = 'challenge';
+  state.taskIndex = 0;
+  state.exampleIndex = 0;
+  state.answered = false;
+  state.selectedAnswer = null;
+  state.currentPause = null;
+  state.taskOverride = null;
+  render();
+}
+
+function switchDifficulty(diff) {
+  state.difficulty = diff;
+  state.step = 'challenge';
+  state.taskIndex = 0;
+  state.exampleIndex = 0;
+  state.answered = false;
+  state.selectedAnswer = null;
+  state.currentPause = null;
+  state.taskOverride = null;
+  render();
+}
+
+function nextMicrotopic() {
+  if (state.currentMicrotopic < topic.microtopics.length - 1) {
+    state.currentMicrotopic++;
+    state.difficulty = 'easy';
+    state.step = 'challenge';
+    state.taskIndex = 0;
+    state.exampleIndex = 0;
+    state.answered = false;
+    state.selectedAnswer = null;
+    state.currentPause = null;
+    state.taskOverride = null;
+    render();
+  } else {
+    openNotes();
+  }
+}
+
+function openNotes() {
+  state.notesOpen = true;
+  render();
+}
+
+function renderNotes() {
+  const container = document.getElementById('notes-content');
+  const saved = JSON.parse(localStorage.getItem('proto_v10_notes') || '{}');
+  let html = '';
+  topic.notes.prompts.forEach((prompt, i) => {
+    html += '<div class="notes-prompt">';
+    html += '<div class="notes-question">' + escapeHtml(prompt) + '</div>';
+    html += '<textarea class="notes-input" id="note-' + i + '" placeholder="Ваша мысль...">' + escapeHtml(saved[i] || '') + '</textarea>';
+    html += '</div>';
+  });
+  html += '<div class="buttons" style="margin-top: 26px;">';
+  html += '<button class="btn btn-primary" onclick="saveAllNotes()">Сохранить</button>';
+  html += '<button class="btn btn-secondary" onclick="backToCover()">Вернуться к теме</button>';
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function saveAllNotes() {
+  const notes = {};
+  topic.notes.prompts.forEach((_, i) => {
+    notes[i] = document.getElementById('note-' + i).value;
+  });
+  localStorage.setItem('proto_v10_notes', JSON.stringify(notes));
+  alert('Сохранено. Ваши мысли останутся здесь и после закрытия.');
+}
+
+function backToCover() {
+  state.notesOpen = false;
+  state.currentMicrotopic = -1;
+  render();
+}
+
+function bindInputEvents() {
+  const input = document.getElementById('input-answer');
+  if (input) {
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') checkTask();
+    });
+  }
+}
+
+loadState();
+render();
+</script>
+</body>
+</html>
