@@ -569,23 +569,94 @@ body {
   margin-bottom: 20px;
 }
 
-.notes-prompt { margin-bottom: 22px; }
-.notes-question { font-size: 16px; color: #2c2c2c; margin-bottom: 8px; }
+/* ============ ЗАМЕТКИ: карточки-стикеры ============ */
 
-.notes-input {
-  width: 100%;
-  padding: 14px 18px;
-  border: 1px solid #e0d9cc;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 16px;
-  background: #fff;
-  resize: vertical;
-  min-height: 70px;
-  color: #2c2c2c;
+.notes-intro {
+  font-size: 15px;
+  color: #7a7a7a;
+  font-style: italic;
+  margin-bottom: 26px;
+  max-width: 620px;
 }
 
-.notes-input:focus { outline: none; border-color: #1AA6C4; }
+.notes-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.note-card {
+  padding: 22px 24px 24px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 220px;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease;
+}
+
+.note-card:hover { transform: translateY(-2px); }
+
+.note-card.yellow { background: #fdf6e3; }
+.note-card.blue   { background: #eaf4f8; }
+.note-card.green  { background: #eef4e9; }
+.note-card.pink   { background: #f8eef3; }
+.note-card.purple { background: #f0ecf7; }
+
+/* пятая карточка растягивается на всю ширину */
+.note-card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.note-card-num {
+  position: absolute;
+  top: 14px;
+  right: 20px;
+  font-family: -apple-system, sans-serif;
+  font-size: 22px;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.15);
+  line-height: 1;
+}
+
+.note-card-q {
+  font-size: 16px;
+  color: #2c2c2c;
+  margin-bottom: 8px;
+  padding-right: 36px;
+  line-height: 1.5;
+}
+
+.note-card-hint {
+  font-family: -apple-system, sans-serif;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.42);
+  font-style: italic;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.note-card-input {
+  flex: 1;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  background: rgba(255, 255, 255, 0.65);
+  color: #2c2c2c;
+  resize: vertical;
+  min-height: 90px;
+  line-height: 1.6;
+}
+
+.note-card-input:focus {
+  outline: none;
+  border-color: rgba(26, 166, 196, 0.45);
+  background: #fff;
+}
 
 .hidden { display: none; }
 
@@ -599,6 +670,8 @@ body {
   .notes-tab { margin-left: 0; }
   .layer-tab { padding: 10px 14px; font-size: 14px; }
   .match-row { flex-direction: column; align-items: stretch; }
+  .notes-cards { grid-template-columns: 1fr; }
+  .note-card:last-child:nth-child(odd) { grid-column: auto; }
 }
 </style>
 </head>
@@ -634,7 +707,6 @@ body {
 
   <div id="notes-screen" class="hidden">
     <h2 class="microtopic-title">Заметки</h2>
-    <p style="font-size: 16px; color: #7a7a7a; margin-bottom: 26px; font-style: italic;">Здесь Вы пишете для себя. Не для нас.</p>
     <div id="notes-content"></div>
   </div>
 </div>
@@ -958,11 +1030,33 @@ const topic = {
     }
   ],
   notes: {
+    intro: "Пять записок — это ваш собственный конспект темы. Не проверка, не отчёт. Отвечайте так, как удобно вам.",
     prompts: [
-      "Что было самым важным?",
-      "Что осталось непонятным?",
-      "Где в жизни Вы встречали проценты?",
-      "Одна мысль, которая осталась с Вами."
+      {
+        text: "Что такое процент? Объясни своими словами — как будто рассказываешь другу.",
+        hint: "Не нужно точного определения. Главное — чтобы было понятно.",
+        color: "yellow"
+      },
+      {
+        text: "Три процента, которые ты теперь узнаёшь сразу. Напиши их и что они означают.",
+        hint: "Например: 50% — это половина.",
+        color: "blue"
+      },
+      {
+        text: "Вспомни скидку в магазине на этой неделе. Что за товар, сколько стоил, какой процент скидки. Если помнишь — посчитай, сколько сэкономил(а).",
+        hint: "Если не помнишь конкретную — придумай.",
+        color: "green"
+      },
+      {
+        text: "Какая задача была самой трудной? Что помогло её решить?",
+        hint: "Подсказка, разбор, другой пример — что угодно.",
+        color: "pink"
+      },
+      {
+        text: "Что бы ты сказал(а) другу, который не понял тему «Проценты»?",
+        hint: "Одно-два предложения. Самое главное.",
+        color: "purple"
+      }
     ]
   }
 };
@@ -1034,7 +1128,6 @@ function getExamples(layer) {
   return [];
 }
 
-// Собирает «сложный» слой из deeper + deepest
 function buildHardLayer(mt) {
   const d = mt.layers.deeper || {};
   const dd = mt.layers.deepest || {};
@@ -1048,7 +1141,6 @@ function buildHardLayer(mt) {
   };
 }
 
-// Возвращает активный «слой» для текущей сложности
 function getActiveLayer(mt) {
   if (state.difficulty === 'hard') return buildHardLayer(mt);
   return mt.layers.base;
@@ -1113,7 +1205,6 @@ function render() {
   const mt = topic.microtopics[state.currentMicrotopic];
   document.getElementById('microtopic-title').textContent = mt.title;
 
-  // Две кнопки вместо трёх слоёв
   const layerTabs = document.getElementById('layer-tabs');
   let tabsHtml = '';
   DIFFICULTIES.forEach(diff => {
@@ -1244,7 +1335,6 @@ function renderLayerContent(container, mt, layer) {
     return;
   }
 
-  // Слой пройден
   html += '<div class="layer-complete">';
   html += '<h3 class="layer-complete-title">Слой пройден</h3>';
   html += '<p class="layer-complete-text">Хотите попробовать посложнее или идти к следующей теме?</p>';
@@ -1616,12 +1706,17 @@ function renderNotes() {
   const container = document.getElementById('notes-content');
   const saved = JSON.parse(localStorage.getItem('proto_v10_notes') || '{}');
   let html = '';
-  topic.notes.prompts.forEach((prompt, i) => {
-    html += '<div class="notes-prompt">';
-    html += '<div class="notes-question">' + escapeHtml(prompt) + '</div>';
-    html += '<textarea class="notes-input" id="note-' + i + '" placeholder="Ваша мысль...">' + escapeHtml(saved[i] || '') + '</textarea>';
+  html += '<p class="notes-intro">' + escapeHtml(topic.notes.intro) + '</p>';
+  html += '<div class="notes-cards">';
+  topic.notes.prompts.forEach((p, i) => {
+    html += '<div class="note-card ' + p.color + '">';
+    html += '<div class="note-card-num">' + (i + 1) + '</div>';
+    html += '<div class="note-card-q">' + escapeHtml(p.text) + '</div>';
+    html += '<div class="note-card-hint">' + escapeHtml(p.hint) + '</div>';
+    html += '<textarea class="note-card-input" id="note-' + i + '" placeholder="Ваш ответ...">' + escapeHtml(saved[i] || '') + '</textarea>';
     html += '</div>';
   });
+  html += '</div>';
   html += '<div class="buttons" style="margin-top: 26px;">';
   html += '<button class="btn btn-primary" onclick="saveAllNotes()">Сохранить</button>';
   html += '<button class="btn btn-secondary" onclick="backToCover()">Вернуться к теме</button>';
@@ -1635,7 +1730,7 @@ function saveAllNotes() {
     notes[i] = document.getElementById('note-' + i).value;
   });
   localStorage.setItem('proto_v10_notes', JSON.stringify(notes));
-  alert('Сохранено. Ваши мысли останутся здесь и после закрытия.');
+  alert('Сохранено. Ваши записки останутся здесь и после закрытия.');
 }
 
 function backToCover() {
